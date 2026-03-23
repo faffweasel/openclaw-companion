@@ -1,0 +1,18 @@
+# TOOLS.md — Local Notes
+
+Skills define _how_ tools work. `.env` defines _where_ things are. This file is for agent-specific knowledge that doesn't fit anywhere else — the stuff that's unique to your setup and learned through experience.
+
+---
+
+## Environment
+
+- **Timezone:** __TIMEZONE__ (__TZ_ABBREV__)
+- **Model routing:** See IDENTITY.md (authoritative source)
+
+## Notes
+
+_Add notes here as you learn things about your environment:_
+_- API quirks for specific providers_
+_- Voice/tone calibration notes_
+_- Tool-specific workarounds_
+_- Things that broke and how you fixed them_

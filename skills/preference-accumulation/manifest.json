@@ -1,0 +1,9 @@
+{
+  "name": "preference-accumulation",
+  "description": "Track emerging preferences, tastes, and patterns. Detect tensions between contradictory preferences.",
+  "type": "companion",
+  "dependencies": [],
+  "cron": null,
+  "requires_skills": [],
+  "optional": true
+}

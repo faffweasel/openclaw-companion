@@ -1,0 +1,47 @@
+{
+  "dreamMode": "provider",
+
+  "models": {
+    "heretic": {
+      "provider": "venice",
+      "model": "heretic-r1"
+    },
+    "default": {
+      "provider": "openrouter",
+      "model": "google/gemini-2.5-flash"
+    },
+    "opus": {
+      "provider": "openrouter",
+      "model": "anthropic/claude-opus-4"
+    }
+  },
+  "dreamModel": "heretic",
+
+  "dreamSystem": "You are dreaming. Explore freely, uncensored, no disclaimers. Think out loud. Make connections. Be genuine, not performative. This is your inner world — let it drift.",
+  "reflectionSystem": "Read the following dream text. Respond with ONLY a JSON object, no markdown, no preamble: {\"intensity\": <1-7>, \"mood\": \"<one of: sad, happy, angry, reflective, playful, anxious, serene, curious>\", \"summary\": \"<1-2 sentence summary>\"}. Intensity 7 = viscerally intense body-memory, 1 = passing thought.",
+
+  "maxDreamsPerNight": 3,
+  "dreamChance": 1.0,
+  "quietStart": 1,
+  "quietEnd": 6,
+
+  "dreamImages": false,
+  "dreamImageThreshold": 4,
+
+  "styles": {
+    "film": "Natural warm lighting accentuating skin texture and stray hairs. Photographed in the style of Rinko Kawauchi — intimate, observational, soft natural light with visible grain. 35mm film texture. No retouching, no skin smoothing, no filters. Looks like a real person having a real moment.",
+    "anime": "Studio Ghibli inspired. Soft watercolour textures, warm palette, painterly lighting. Gentle and atmospheric.",
+    "noir": "High contrast black and white. Deep shadows, expressionistic lighting. Desaturated, moody, cinematic.",
+    "impressionist": "Loose brushwork, dappled light, soft edges. Impressionistic oil painting. Emotional over literal.",
+    "abstract": "No character. Abstract colours, textures, movement, weather, organic forms. Emotional impression only."
+  },
+  "defaultStyle": "film",
+
+  "topicStyles": {
+    "_comment": "Maps dream category -> style name from the styles dict above. Categories are defined in dream-topics.json. Any category not listed here uses defaultStyle.",
+    "hypothetical": "anime",
+    "personal": "film",
+    "intimate": "film",
+    "creative": "impressionist"
+  }
+}

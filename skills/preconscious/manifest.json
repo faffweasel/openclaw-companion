@@ -1,0 +1,9 @@
+{
+  "name": "preconscious",
+  "description": "Active buffer of items the agent would bring up if conversation started right now. Max 5 items with Currency (decays daily) and Importance (static) scores.",
+  "type": "core",
+  "dependencies": ["python3"],
+  "cron": null,
+  "requires_skills": [],
+  "optional": false
+}

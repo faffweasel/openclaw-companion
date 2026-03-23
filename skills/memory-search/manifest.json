@@ -1,0 +1,8 @@
+{
+  "name": "memory-search",
+  "type": "companion",
+  "dependencies": ["python3"],
+  "requires_skills": [],
+  "optional_skills": ["multi-provider"],
+  "optional": true
+}

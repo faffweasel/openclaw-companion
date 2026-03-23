@@ -1,0 +1,9 @@
+{
+  "name": "self-improvement",
+  "type": "companion",
+  "dependencies": ["python3"],
+  "seed_target": ".learnings",
+  "requires_skills": [],
+  "optional_skills": ["preference-accumulation"],
+  "optional": true
+}

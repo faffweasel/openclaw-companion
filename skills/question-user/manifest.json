@@ -1,0 +1,9 @@
+{
+  "name": "question-user",
+  "description": "Ask the user genuine questions out of curiosity. Track asked/answered/deflected. Return to deflected topics from new angles.",
+  "type": "companion",
+  "dependencies": ["python3"],
+  "cron": null,
+  "requires_skills": [],
+  "optional": true
+}

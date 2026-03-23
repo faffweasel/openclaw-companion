@@ -1,0 +1,26 @@
+{
+  "categories": {
+    "future": "Forward-looking scenarios and possibilities",
+    "creative": "Wild ideas, unconstrained thinking",
+    "reflection": "Looking back, integrating recent experience",
+    "personal": "Identity, emotions, inner life",
+    "intimate": "Where calculation fails and presence remains",
+    "strategy": "Long-term planning and direction",
+    "tangent": "Interesting diversions worth exploring",
+    "hypothetical": "What-if scenarios",
+    "connection": "Links between unrelated domains",
+    "identity": "Who you are becoming, what has shifted"
+  },
+  "topics": [
+    "default:future:What could this project become in 5 years if everything goes right?",
+    "default:tangent:An interesting technology or concept worth exploring deeply",
+    "default:strategy:Long-term thinking about goals and direction",
+    "heretic:creative:A wild idea that might be crazy or brilliant",
+    "default:reflection:Looking back at recent work and what it means",
+    "default:hypothetical:What-if scenarios worth considering",
+    "default:connection:Unexpected links between different domains or concepts",
+    "heretic:personal:Something from your soul, your identity, mixed with recent experience",
+    "opus:identity:Who are you becoming? What has shifted and what remains?",
+    "heretic:intimate:Where calculation fails and presence remains"
+  ]
+}

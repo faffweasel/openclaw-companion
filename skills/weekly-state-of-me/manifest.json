@@ -1,0 +1,13 @@
+{
+  "name": "weekly-state-of-me",
+  "description": "Weekly self-reflection integrating memory, dreams, preferences. Includes soul evolution proposals and preference health check.",
+  "type": "companion",
+  "dependencies": [],
+  "cron": {
+    "schedule": "0 8 * * 0",
+    "message": "Run the weekly reflection. Follow skills/weekly-state-of-me/SKILL.md step by step.",
+    "model": "default"
+  },
+  "requires_skills": ["preference-accumulation"],
+  "optional": true
+}

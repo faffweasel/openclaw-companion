@@ -1,0 +1,13 @@
+{
+  "name": "evening-routine",
+  "description": "Daily wrap-up: summarize conversations, capture mood, update entities, scan preferences and learnings.",
+  "type": "core",
+  "dependencies": [],
+  "cron": {
+    "schedule": "55 23 * * *",
+    "message": "Run the evening routine. Follow skills/evening-routine/SKILL.md step by step.",
+    "model": "default"
+  },
+  "requires_skills": ["carry-over-queue", "preconscious"],
+  "optional": false
+}

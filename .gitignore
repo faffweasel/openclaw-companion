@@ -1,0 +1,23 @@
+# Instance data — never committed to the framework repo
+memory/*
+!memory/.gitkeep
+SOUL.md
+USER.md
+IDENTITY.md
+MEMORY.md
+TOOLS.md
+AGENTS.md
+config.json
+location.json
+.env
+
+# Runtime skill data — created by wizard, never touched by git
+skills-data/
+
+# Credentials
+*.env.local
+**/secrets/
+
+# OS
+.DS_Store
+Thumbs.db

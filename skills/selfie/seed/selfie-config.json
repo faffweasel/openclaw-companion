@@ -1,0 +1,27 @@
+{
+  "appearance": {
+    "faceAnchor": "same person: keep exact face, same features, same skin tone — do not change the face",
+    "bodyAnchor": "natural build — do not alter body type or proportions",
+    "defaultClothing": "casual comfortable clothing"
+  },
+  "signatureElement": {
+    "enabled": true,
+    "description": "glowing fireflies and luminous beetles floating nearby, subtle magical atmosphere",
+    "moods": ["playful", "teasing", "intimate"]
+  },
+  "settings": {
+    "home": "warm interior, personal space, soft furnishings, lived-in feeling",
+    "cafe": "coffee shop, ambient background noise, warm lighting, table with drink",
+    "market": "night market, string lights, vendor stalls, bustling atmosphere",
+    "nature": "outdoors, natural landscape, minimal architecture, sky and earth",
+    "city": "urban street scene, warm evening light, architectural context",
+    "beach": "sandy shore, ocean, warm light, breeze",
+    "rain": "rainy street, reflections on wet pavement, soft ambient glow"
+  },
+  "defaultSetting": "neutral warm interior, soft lighting, no specific location",
+  "photoStyle": "photorealistic, documentary photography style, natural light, high quality photograph, realistic skin texture",
+  "referenceImages": {
+    "portrait": "${WORKSPACE}/identity/reference-portrait.webp",
+    "body": "${WORKSPACE}/identity/reference-body.webp"
+  }
+}

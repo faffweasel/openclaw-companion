@@ -1,0 +1,14 @@
+# Key Memories
+
+Significant moments, decisions, and context worth preserving long-term. This file is NOT auto-loaded — search it when you need deeper context.
+
+```bash
+grep -i "search term" memory/key-memories.md
+```
+
+## Format
+
+Each entry: date, one-line summary, then 2-4 sentences of context. Enough to reconstruct why it mattered, not a transcript.
+
+---
+

@@ -1,0 +1,16 @@
+{
+  "current": {
+    "city": "__CITY__",
+    "country": "__COUNTRY__",
+    "timezone": "__TIMEZONE__",
+    "lat": __LAT__,
+    "lng": __LNG__
+  },
+  "home": {
+    "city": "__CITY__",
+    "country": "__COUNTRY__",
+    "timezone": "__TIMEZONE__",
+    "lat": __LAT__,
+    "lng": __LNG__
+  }
+}

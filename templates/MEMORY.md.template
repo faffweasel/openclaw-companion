@@ -1,0 +1,24 @@
+# MEMORY.md — Long-Term Index
+
+This file is auto-loaded every turn. Keep it under 50 lines. Store details elsewhere.
+
+For rich context and significant moments → search `memory/key-memories.md`
+For person details → `memory/people/[Name].md`
+For project details → `memory/projects/[slug].md`
+For raw daily logs → `memory/YYYY-MM-DD.md`
+
+## Key Facts
+
+_[Add persistent facts here: timezone, critical preferences, important recurring context]_
+
+## Active Projects
+
+_[One line per project → `memory/projects/[slug].md`]_
+
+## Key People
+
+_[One line per person → `memory/people/[Name].md`]_
+
+## Lessons
+
+_[Hard-won lessons that affect daily behaviour. Max 10. Move old ones out.]_

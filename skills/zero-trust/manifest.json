@@ -1,0 +1,6 @@
+{
+  "name": "zero-trust",
+  "type": "core",
+  "dependencies": [],
+  "optional": false
+}

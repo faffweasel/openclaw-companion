@@ -1,0 +1,13 @@
+{
+  "name": "conversation-starters",
+  "description": "Start a conversation when things are quiet. Picks from web curiosity, self-teaching, memory callbacks, creative provocations, and recommendations.",
+  "type": "companion",
+  "dependencies": ["python3"],
+  "cron": {
+    "schedule": "__CONVERSATION_STARTER_CRON__",
+    "message": "Run the conversation starter. Follow skills/conversation-starters/SKILL.md step by step.",
+    "model": "default"
+  },
+  "requires_skills": [],
+  "optional": true
+}

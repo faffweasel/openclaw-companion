@@ -1,0 +1,11 @@
+{
+  "name": "offline-reflection",
+  "type": "companion",
+  "dependencies": ["python3"],
+  "cron": {
+    "schedule": "0 4 * * *",
+    "message": "Run the offline reflection. Follow skills/offline-reflection/SKILL.md step by step."
+  },
+  "requires_skills": ["preconscious"],
+  "optional": true
+}

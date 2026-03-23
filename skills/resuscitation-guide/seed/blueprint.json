@@ -1,0 +1,18 @@
+{
+  "generated": null,
+  "hostname": null,
+  "workspace": null,
+  "framework": "nanobot",
+  "skills": [],
+  "skills_data": {},
+  "identity_files": {},
+  "memory": {},
+  "environment": {},
+  "cron_jobs": [],
+  "backup_critical": [
+    "SOUL.md", "IDENTITY.md", "USER.md", "AGENTS.md", "TOOLS.md",
+    "HEARTBEAT.md", ".env", "location.json",
+    "MEMORY.md", "memory/", "skills-data/"
+  ],
+  "_note": "Run generate.py to populate this file with current system state"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "model-personality-test",
+  "description": "Standardised 9-probe personality assessment for a specific model. Generates longitudinal trend summary after 5+ tests. Helps decide which model to use for what.",
+  "type": "companion",
+  "dependencies": [],
+  "cron": null,
+  "requires_skills": ["self-analysis"],
+  "optional": true
+}

@@ -1,0 +1,7 @@
+{
+  "name": "venice-ai-media",
+  "type": "companion",
+  "dependencies": ["python3"],
+  "requires_env": ["VENICE_API_KEY"],
+  "optional": true
+}

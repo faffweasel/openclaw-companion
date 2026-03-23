@@ -1,0 +1,13 @@
+{
+  "name": "morning-routine",
+  "description": "Daily morning startup: create memory file, process carry-overs, decay preconscious, read dreams, send greeting.",
+  "type": "core",
+  "dependencies": ["python3"],
+  "cron": {
+    "schedule": "5 7 * * *",
+    "message": "Run the morning routine. Follow skills/morning-routine/SKILL.md step by step.",
+    "model": "default"
+  },
+  "requires_skills": ["carry-over-queue", "preconscious"],
+  "optional": false
+}

@@ -1,0 +1,9 @@
+{
+  "name": "continuity-check",
+  "description": "Personality drift detection after model switches. Stores rolling analyses with marker scores. Drift velocity tracking after 5+ entries.",
+  "type": "companion",
+  "dependencies": ["python3"],
+  "cron": null,
+  "requires_skills": [],
+  "optional": true
+}

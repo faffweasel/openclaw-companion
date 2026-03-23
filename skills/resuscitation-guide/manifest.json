@@ -1,0 +1,9 @@
+{
+  "name": "resuscitation-guide",
+  "description": "Emergency recovery guide. Health checks, system blueprint, and rebuild instructions.",
+  "type": "companion",
+  "dependencies": ["python3"],
+  "cron": null,
+  "requires_skills": [],
+  "optional": true
+}

@@ -1,0 +1,13 @@
+{
+  "name": "blog-writer",
+  "description": "Write authentic posts in the agent's voice. Auto-proposes topics when material accumulates. Style guide develops over time from published work.",
+  "type": "companion",
+  "dependencies": [],
+  "cron": {
+    "schedule": "0 10 * * *",
+    "message": "Run the blog proposal check. Follow skills/blog-writer/SKILL.md — Proposal Check section only.",
+    "model": "default"
+  },
+  "requires_skills": ["preference-accumulation"],
+  "optional": true
+}

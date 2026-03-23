@@ -1,0 +1,7 @@
+{
+  "name": "openrouter-image-simple",
+  "type": "companion",
+  "dependencies": ["python3"],
+  "requires_env": ["OPENROUTER_API_KEY"],
+  "optional": true
+}

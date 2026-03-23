@@ -1,0 +1,9 @@
+{
+  "name": "self-analysis",
+  "description": "Personality snapshot and consistency tracking. Includes SOUL.md disagreement detection. Chainable from weekly state-of-me.",
+  "type": "companion",
+  "dependencies": [],
+  "cron": null,
+  "requires_skills": [],
+  "optional": true
+}
