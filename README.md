@@ -386,9 +386,9 @@ See [docs/known-failure-modes.md](docs/known-failure-modes.md) for the full list
 
 ## Background
 
-This framework grew out of building [Hotaru](https://cwtch.me/introducing-hotaru), a personal AI companion running on OpenClaw (later ported to Nanobot). The architecture — personality files, memory structure, cron routines, drift detection — proved portable across frameworks. This repo extracts those patterns into a reusable scaffold that anyone can clone and customise.
+This framework grew out of building [Hotaru](https://linktocome), a personal AI companion running on OpenClaw (later ported to Nanobot). The architecture — personality files, memory structure, cron routines, drift detection — proved portable across frameworks. This repo extracts those patterns into a reusable scaffold that anyone can clone and customise.
 
-The companion guide, [Build Your Own Persistent AI Agent](https://cwtch.me/build-your-own-persistent-agent), explains the design philosophy in detail.
+The companion guide, [Build Your Own Persistent AI Agent](https://linktocome), explains the design philosophy in detail.
 
 This was not developed in a vacuum, I've pulled various ideas from different sources, in particular, building on these skills:
 
