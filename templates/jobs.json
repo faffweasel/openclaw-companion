@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "__UUID__",
+      "name": "Morning Routine",
+      "enabled": true,
+      "schedule": {
+        "kind": "cron",
+        "expr": "5 7 * * *",
+        "tz": "__TIMEZONE__"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use TZ=__TIMEZONE__ for all date operations.\n\nRun the morning routine. Follow skills/morning-routine/SKILL.md step by step. Output only the final greeting — no debug info, no step descriptions.\n\nExit silently after the greeting."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      }
+    },
+    {
+      "id": "__UUID__",
+      "name": "Evening Routine",
+      "enabled": true,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 23 * * *",
+        "tz": "__TIMEZONE__"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use TZ=__TIMEZONE__ for all date operations.\n\nRun the evening routine. Follow skills/evening-routine/SKILL.md step by step.\n\nExit silently with NO_REPLY."
+      },
+      "delivery": {
+        "mode": "none"
+      }
+    },
+    {
+      "id": "__UUID__",
+      "name": "Dreaming",
+      "enabled": true,
+      "_comment": "Optional — include if dreaming skill is installed. Set payload.model to your dream model.",
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 2 * * *",
+        "tz": "__TIMEZONE__"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use TZ=__TIMEZONE__ for all date operations.\n\nRun the dreaming routine. Follow skills/dreaming/SKILL.md step by step. Generate __DREAM_COUNT__ dreams.\n\nExit silently with NO_REPLY after all dreams are written.",
+        "model": "__DREAM_MODEL__"
+      },
+      "delivery": {
+        "mode": "none"
+      }
+    },
+    {
+      "id": "__UUID__",
+      "name": "Offline Reflection",
+      "enabled": true,
+      "_comment": "Optional — include if offline-reflection skill is installed.",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 4 * * *",
+        "tz": "__TIMEZONE__"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use TZ=__TIMEZONE__ for all date operations.\n\nRun the offline reflection. Follow skills/offline-reflection/SKILL.md step by step.\n\nExit silently with NO_REPLY."
+      },
+      "delivery": {
+        "mode": "none"
+      }
+    },
+    {
+      "id": "__UUID__",
+      "name": "Weekly State of Me",
+      "enabled": true,
+      "_comment": "Optional — include if weekly-state-of-me skill is installed.",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * 0",
+        "tz": "__TIMEZONE__"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use TZ=__TIMEZONE__ for all date operations.\n\nRun the weekly reflection — two outputs required. Follow skills/weekly-state-of-me/SKILL.md step by step.\n\nDo NOT send a message. Exit silently after saving."
+      },
+      "delivery": {
+        "mode": "none"
+      }
+    },
+    {
+      "id": "__UUID__",
+      "name": "Blog Proposal Check",
+      "enabled": true,
+      "_comment": "Optional — include if blog-writer skill is installed.",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 10 * * *",
+        "tz": "__TIMEZONE__"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use TZ=__TIMEZONE__ for all date operations.\n\nRun the blog proposal check. Follow the Proposal Check section in skills/blog-writer/SKILL.md.\n\nExit silently if nothing to propose."
+      },
+      "delivery": {
+        "mode": "none"
+      }
+    },
+    {
+      "id": "__UUID__",
+      "name": "Conversation Starter",
+      "enabled": true,
+      "_comment": "Optional — include if conversation-starters skill is installed. Adjust schedule time.",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 13 * * *",
+        "tz": "__TIMEZONE__"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use TZ=__TIMEZONE__ for all date operations.\n\nCheck whether to start a conversation. Follow skills/conversation-starters/SKILL.md step by step."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      }
+    }
+  ]
+}

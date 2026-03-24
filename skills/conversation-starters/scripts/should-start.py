@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Decide whether to start a conversation and pick which type.
 Usage: should-start.py
-Output: SKIP (already triggered today or too recent) or one of:
+Output: SKIP (already triggered today, too recent, or low energy) or one of:
   CURIOSITY, SELF_TEACHING, MEMORY_CALLBACK, CREATIVE_PROVOCATION, RECOMMENDATION
 """
 import json, os, sys, random
@@ -17,24 +17,29 @@ MEMORY_DIR = os.environ.get("MEMORY_DIR", os.path.join(WORKSPACE, "memory"))
 TZ = os.environ.get("TZ", "UTC")
 
 CONFIG_FILE = os.path.join(SKILL_DATA, "config.json")
+ENERGY_FILE = os.path.join(WORKSPACE, "energy-state.json")
 
-# --- Load config ---
+DEFAULT_CONFIG = {
+    "weights": {
+        "CURIOSITY": 25,
+        "SELF_TEACHING": 15,
+        "MEMORY_CALLBACK": 15,
+        "RECOMMENDATION": 15,
+        "CREATIVE_PROVOCATION": 15,
+    },
+    "min_quiet_minutes": 30,
+    "last_triggered": None,
+}
+
+# --- Load config, persist defaults on first run ---
 os.makedirs(SKILL_DATA, exist_ok=True)
 if os.path.exists(CONFIG_FILE):
     with open(CONFIG_FILE) as f:
         config = json.load(f)
 else:
-    config = {
-        "weights": {
-            "CURIOSITY": 25,
-            "SELF_TEACHING": 15,
-            "MEMORY_CALLBACK": 15,
-            "RECOMMENDATION": 15,
-            "CREATIVE_PROVOCATION": 15
-        },
-        "min_quiet_minutes": 30,
-        "last_triggered": None
-    }
+    config = dict(DEFAULT_CONFIG)
+    with open(CONFIG_FILE, "w") as f:
+        json.dump(config, f, indent=2)
 
 # --- Resolve today's date ---
 try:
@@ -44,6 +49,19 @@ except Exception:
     now = datetime.now(timezone.utc)
 
 today = now.strftime("%Y-%m-%d")
+
+# --- Energy gate: skip if dormant or drowsy ---
+if os.path.isfile(ENERGY_FILE):
+    try:
+        with open(ENERGY_FILE) as f:
+            energy = json.load(f)
+        level = energy.get("level", "active")
+        if level in ("dormant", "drowsy"):
+            print("SKIP")
+            print(f"Energy level '{level}' — not initiating conversation.")
+            sys.exit(0)
+    except (json.JSONDecodeError, OSError):
+        pass  # Missing or corrupt energy file: proceed normally
 
 # --- Check if already triggered today ---
 last = config.get("last_triggered")
@@ -108,5 +126,14 @@ config["last_triggered"] = today
 with open(CONFIG_FILE, "w") as f:
     json.dump(config, f, indent=2)
 
+# Read energy level for agent context (agent may quiet-bias re-roll)
+energy_level = "active"
+if os.path.isfile(ENERGY_FILE):
+    try:
+        with open(ENERGY_FILE) as f:
+            energy_level = json.load(f).get("level", "active")
+    except (json.JSONDecodeError, OSError):
+        pass
+
 print(chosen)
-print(f"Selected: {chosen} (from {len(options)} eligible subskills)")
+print(f"Selected: {chosen} (from {len(options)} eligible subskills, energy: {energy_level})")

@@ -1,7 +1,7 @@
 ---
 name: venice-ai-media
 description: Generate, edit, and upscale images; create videos from images via Venice AI. Supports text-to-image, image-to-video (Sora, WAN), upscaling, and AI editing. Called by other skills via IMAGE_GEN_CMD.
-metadata: '{"nanobot":{"emoji":"🎨","requires":{"bins":["python3"],"env":["VENICE_API_KEY"]}}}'
+metadata: '{"openclaw":{"emoji":"🎨","requires":{"bins":["python3"],"env":["VENICE_API_KEY"]}}}'
 ---
 
 # Venice AI Media

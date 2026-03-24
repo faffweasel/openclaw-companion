@@ -1,13 +1,13 @@
 ---
 name: evening-routine
-description: "Daily wrap-up: summarize conversations, capture structured mood and energy, update entity files, scan for preferences and learnings. Triggered by cron at 23:30 daily. Silent — no message to user."
+description: "Daily wrap-up: summarize conversations, capture structured mood and energy, update entity files, scan for preferences and learnings. Triggered by cron at 23:55 daily. Silent — no message to user."
 ---
 
 # Evening Routine
 
 Daily wrap-up. Summarize what happened, capture mood and energy state, update entity files, scan for preferences and learnings.
 
-**Cron:** `30 23 * * *` (23:30 local time daily)
+**Cron:** `55 23 * * *` (23:55 local time daily)
 **Delivery:** Silent (file writes only — no message to user)
 **Model:** Default (cheapest that writes coherently)
 

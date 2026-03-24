@@ -1,7 +1,7 @@
 ---
 name: offline-reflection
 description: "Analytical overnight processing: find patterns, contradictions, unresolved threads, and missed connections across recent memory. Runs after dreaming. Output surfaces in morning routine."
-metadata: '{"nanobot": {"requires": {"bins": ["python3"]}}}'
+metadata: '{"openclaw": {"requires": {"bins": ["python3"]}}}'
 ---
 
 # Offline Reflection

@@ -1,7 +1,7 @@
 ---
 name: morning-routine
 description: "Daily morning startup: create memory file, process carry-overs, decay preconscious, decay energy, check pending learnings, read dreams, send greeting influenced by mood and energy. Triggered by cron at 07:05 daily."
-metadata: '{"nanobot": {"requires": {"bins": ["python3"]}}}'
+metadata: '{"openclaw": {"requires": {"bins": ["python3"]}}}'
 ---
 
 # Morning Routine

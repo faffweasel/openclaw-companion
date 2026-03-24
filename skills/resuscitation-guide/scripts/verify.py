@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Verify system health — check files, skills, memory, gateway.
+"""Verify system health — check files, skills, memory, cron.
 Usage: verify.py
 """
-import os, sys, shutil, re
+import os, sys, shutil, re, json
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -10,9 +10,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SKILL_DIR = os.path.dirname(SCRIPT_DIR)
 WORKSPACE = os.path.dirname(os.path.dirname(SKILL_DIR))
 ENV_FILE = os.path.join(WORKSPACE, ".env")
-TZ = os.environ.get("TZ", "UTC")
 
-# Source .env manually for key vars
+# Source .env
 if os.path.isfile(ENV_FILE):
     with open(ENV_FILE) as f:
         for line in f:
@@ -20,39 +19,66 @@ if os.path.isfile(ENV_FILE):
             if line and not line.startswith("#") and "=" in line:
                 key, _, val = line.partition("=")
                 val = val.strip('"').strip("'")
-                # Don't override existing env vars, only fill gaps
                 if key.strip() not in os.environ:
                     os.environ[key.strip()] = val
+
+TZ = os.environ.get("TZ", "UTC")
+DATA_DIR = os.environ.get("DATA_DIR", os.path.join(WORKSPACE, "skills-data"))
+SKILLS_DIR = os.path.join(WORKSPACE, "skills")
 
 errors = 0
 warnings = 0
 
+try:
+    from zoneinfo import ZoneInfo
+    now = datetime.now(ZoneInfo(TZ))
+except Exception:
+    now = datetime.now(timezone.utc)
+
 print("=== Agent System Health Check ===")
-print(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+print(f"Timestamp: {now.strftime('%Y-%m-%d %H:%M:%S')} ({TZ})")
 print(f"Workspace: {WORKSPACE}")
 print()
 
 # --- Core identity files ---
 print("Core Identity Files:")
-for fname in ["SOUL.md", "IDENTITY.md", "USER.md", "AGENTS.md", "HEARTBEAT.md", "TOOLS.md", ".env"]:
+for fname in ["SOUL.md", "IDENTITY.md", "USER.md", "AGENTS.md", "HEARTBEAT.md", "TOOLS.md", ".env", "energy-state.json"]:
     fpath = os.path.join(WORKSPACE, fname)
     if os.path.isfile(fpath):
         size = os.path.getsize(fpath)
         print(f"  ✓ {fname} ({size} bytes)")
     else:
-        print(f"  ✗ {fname} MISSING")
-        errors += 1
+        marker = "✗" if fname not in ("HEARTBEAT.md", "TOOLS.md", "energy-state.json") else "⚠"
+        print(f"  {marker} {fname} MISSING")
+        if fname not in ("HEARTBEAT.md", "TOOLS.md", "energy-state.json"):
+            errors += 1
+        else:
+            warnings += 1
 print()
 
-# --- MEMORY.md size check ---
-memory_md = os.path.join(WORKSPACE, "MEMORY.md")
-if os.path.isfile(memory_md):
-    with open(memory_md) as f:
+# --- MEMORY.md ---
+memory_md_root = os.path.join(WORKSPACE, "MEMORY.md")
+memory_md_old = os.path.join(WORKSPACE, "memory", "MEMORY.md")
+root_exists = os.path.isfile(memory_md_root)
+old_exists = os.path.isfile(memory_md_old)
+
+if root_exists and old_exists:
+    print("MEMORY.md: ⚠ Found at BOTH locations — duplicate!")
+    print("  Root (correct): MEMORY.md")
+    print("  Old location:   memory/MEMORY.md")
+    print("  Fix: rm memory/MEMORY.md (keep the root copy)")
+    warnings += 1
+elif root_exists:
+    with open(memory_md_root) as f:
         line_count = len(f.readlines())
     status = "✓" if line_count <= 50 else "⚠"
     if line_count > 50:
         warnings += 1
-    print(f"MEMORY.md: {status} {line_count} lines (target: ≤50)")
+    print(f"MEMORY.md: {status} {line_count} lines at workspace root (target: ≤50)")
+elif old_exists:
+    print("MEMORY.md: ⚠ Found at memory/MEMORY.md (old location) — should be at workspace root")
+    print("  Fix: mv memory/MEMORY.md MEMORY.md")
+    warnings += 1
 else:
     print("MEMORY.md: ✗ MISSING")
     errors += 1
@@ -60,29 +86,35 @@ else:
 # --- Key memories ---
 key_mem = os.path.join(WORKSPACE, "memory", "key-memories.md")
 if os.path.isfile(key_mem):
-    print(f"key-memories.md: ✓")
+    print("key-memories.md: ✓")
 else:
-    print(f"key-memories.md: ✗ MISSING")
+    print("key-memories.md: ⚠ MISSING")
     warnings += 1
 
 # --- location.json ---
 loc = os.path.join(WORKSPACE, "location.json")
-if os.path.isfile(loc):
-    print(f"location.json: ✓")
+print(f"location.json: {'✓' if os.path.isfile(loc) else '— not configured'}")
+
+# --- Cron jobs ---
+cron_file = os.path.join(WORKSPACE, "..", "cron", "jobs.json")
+cron_file = os.path.normpath(cron_file)
+if os.path.isfile(cron_file):
+    try:
+        with open(cron_file) as f:
+            cron_data = json.load(f)
+        job_count = len(cron_data.get("jobs", []))
+        print(f"../cron/jobs.json: ✓ ({job_count} job(s))")
+    except (json.JSONDecodeError, OSError):
+        print("../cron/jobs.json: ⚠ Exists but invalid JSON")
+        warnings += 1
 else:
-    print(f"location.json: — not configured")
+    print("../cron/jobs.json: ✗ MISSING — run setup.sh to generate")
+    errors += 1
 print()
 
 # --- Memory directory ---
 memory_dir = os.path.join(WORKSPACE, "memory")
 if os.path.isdir(memory_dir):
-    # Count recent daily files
-    try:
-        from zoneinfo import ZoneInfo
-        now = datetime.now(ZoneInfo(TZ))
-    except Exception:
-        now = datetime.now(timezone.utc)
-
     recent = 0
     for i in range(7):
         d = (now - timedelta(days=i)).strftime("%Y-%m-%d")
@@ -95,8 +127,7 @@ if os.path.isdir(memory_dir):
         print("  ⚠ Low recent activity")
         warnings += 1
 
-    # Subdirectories
-    for subdir in ["people", "projects", "dreams", ".learnings", "state-of-me", "self-analysis"]:
+    for subdir in ["people", "projects", "dreams", ".learnings", "state-of-me", "self-analysis", "reflections", "soul-proposals"]:
         path = os.path.join(memory_dir, subdir)
         if os.path.isdir(path):
             count = len(os.listdir(path))
@@ -108,14 +139,17 @@ print()
 
 # --- Skills ---
 print("Skills:")
-skills_dir = os.path.join(WORKSPACE, "skills")
-core_skills = ["preconscious", "carry-over-queue", "morning-routine", "evening-routine"]
-companion_skills = ["preference-accumulation", "continuity-check", "question-user",
-                    "self-analysis", "model-personality-test", "weekly-state-of-me",
-                    "blog-writer", "conversation-starters", "dreaming", "resuscitation-guide"]
+core_skills = ["preconscious", "carry-over-queue", "morning-routine", "evening-routine", "zero-trust"]
+companion_skills = [
+    "preference-accumulation", "continuity-check", "question-user",
+    "self-analysis", "model-personality-test", "weekly-state-of-me",
+    "blog-writer", "conversation-starters", "dreaming", "offline-reflection",
+    "resuscitation-guide", "self-improvement", "memory-search", "selfie",
+    "venice-ai-media", "openrouter-image-simple",
+]
 
 for skill in core_skills:
-    skill_path = os.path.join(skills_dir, skill)
+    skill_path = os.path.join(SKILLS_DIR, skill)
     if os.path.isdir(skill_path) and os.path.isfile(os.path.join(skill_path, "SKILL.md")):
         print(f"  ✓ {skill} (core)")
     else:
@@ -123,34 +157,40 @@ for skill in core_skills:
         errors += 1
 
 for skill in companion_skills:
-    skill_path = os.path.join(skills_dir, skill)
+    skill_path = os.path.join(SKILLS_DIR, skill)
     if os.path.isdir(skill_path) and os.path.isfile(os.path.join(skill_path, "SKILL.md")):
         print(f"  ✓ {skill}")
     else:
         print(f"  — {skill} (not installed)")
 print()
 
-# --- Skills-data ---
-data_dir = os.environ.get("DATA_DIR", os.path.join(WORKSPACE, "skills-data"))
-if os.path.isdir(data_dir):
-    data_skills = sorted(os.listdir(data_dir))
-    print(f"Skills-data: {len(data_skills)} skill(s) with runtime data")
+# --- Skills-data cross-validation ---
+print("Skills-data:")
+if os.path.isdir(DATA_DIR):
+    data_skills = sorted(os.listdir(DATA_DIR))
+    print(f"  {len(data_skills)} skill(s) with runtime data")
     for d in data_skills:
-        files = os.listdir(os.path.join(data_dir, d))
+        files = os.listdir(os.path.join(DATA_DIR, d))
         print(f"  {d}/: {len(files)} file(s)")
+
+    # Check that each installed skill with a seed/ dir has a skills-data/ dir
+    missing_data = []
+    for skill in os.listdir(SKILLS_DIR):
+        seed_path = os.path.join(SKILLS_DIR, skill, "seed")
+        data_path = os.path.join(DATA_DIR, skill)
+        if os.path.isdir(seed_path) and not os.path.isdir(data_path):
+            missing_data.append(skill)
+    if missing_data:
+        print(f"  ⚠ Skills with seed/ but no skills-data/: {', '.join(missing_data)}")
+        print("    Re-run setup.sh to seed them.")
+        warnings += 1
 else:
-    print("Skills-data: ✗ MISSING")
+    print("  ✗ MISSING")
     errors += 1
 print()
 
 # --- Environment ---
 print("Environment:")
-if shutil.which("nanobot"):
-    print("  ✓ nanobot in PATH")
-else:
-    print("  ✗ nanobot not in PATH")
-    errors += 1
-
 if shutil.which("python3"):
     print("  ✓ python3 in PATH")
 else:

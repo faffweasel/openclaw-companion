@@ -6,7 +6,7 @@ Checks: quiet hours, nightly limit, dream chance.
 Outputs JSON to stdout on success, exits 1 if no dream.
 
 Output format:
-    {"category": "personal", "prompt": "...", "reflectionModel": "heretic"}
+    {"category": "personal", "prompt": "...", "reflectionModel": "default"}
 """
 
 import json
@@ -16,7 +16,6 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-# Nanobot workspace preamble
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SKILL_DIR = os.path.dirname(SCRIPT_DIR)
 SKILL_NAME = os.path.basename(SKILL_DIR)

@@ -9,7 +9,6 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-# Nanobot workspace preamble
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SKILL_DIR = os.path.dirname(SCRIPT_DIR)
 SKILL_NAME = os.path.basename(SKILL_DIR)
@@ -23,8 +22,8 @@ def get_api_key() -> str | None:
     """
     Get API key from VENICE_API_KEY environment variable.
 
-    Passed into the container via docker-compose.override.yml,
-    NOT stored in the workspace .env (which the agent can read).
+    Set via OpenClaw's environment configuration, NOT in the workspace .env
+    (which the agent can read).
     """
     api_key = os.environ.get("VENICE_API_KEY", "").strip()
     return api_key if api_key else None
@@ -35,9 +34,7 @@ def require_api_key() -> str:
     api_key = get_api_key()
     if not api_key:
         print("Error: VENICE_API_KEY not found in environment", file=sys.stderr)
-        print("Add it to docker-compose.override.yml:", file=sys.stderr)
-        print("  environment:", file=sys.stderr)
-        print("    - VENICE_API_KEY=vn_your_key_here", file=sys.stderr)
+        print("Set VENICE_API_KEY via OpenClaw's environment configuration.", file=sys.stderr)
         print("Get your API key at: https://venice.ai/settings/api", file=sys.stderr)
         sys.exit(2)
     return api_key

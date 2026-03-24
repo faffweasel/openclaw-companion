@@ -4,9 +4,9 @@
   "type": "companion",
   "dependencies": ["python3"],
   "cron": {
-    "schedule": "__CONVERSATION_STARTER_CRON__",
     "message": "Run the conversation starter. Follow skills/conversation-starters/SKILL.md step by step.",
-    "model": "default"
+    "model": "default",
+    "_note": "Schedule is user-configured during setup and written to ../cron/jobs.json. No fixed value here."
   },
   "requires_skills": [],
   "optional": true

@@ -8,6 +8,7 @@ Usage:
     python3 analyze.py image.png "Who is this person?" --model google/gemini-2.0-flash-001
 
 Requires OPENROUTER_API_KEY environment variable.
+Vision model configured in skills-data/openrouter-image-simple/config.json.
 """
 
 import os
@@ -18,45 +19,59 @@ import urllib.request
 import urllib.error
 from pathlib import Path
 
-DEFAULT_VISION_MODEL = "google/gemini-2.0-flash-001"
-API_URL = "https://openrouter.ai/api/v1/chat/completions"
+# Workspace detection
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SKILL_DIR = os.path.dirname(SCRIPT_DIR)
+SKILL_NAME = os.path.basename(SKILL_DIR)
+WORKSPACE = os.path.dirname(os.path.dirname(SKILL_DIR))
+DATA_DIR = os.environ.get("DATA_DIR", os.path.join(WORKSPACE, "skills-data"))
+SKILL_DATA = os.path.join(DATA_DIR, SKILL_NAME)
+CONFIG_FILE = os.path.join(SKILL_DATA, "config.json")
 
 
-def get_api_key():
-    """Get API key from environment."""
+def _load_config() -> dict:
+    if os.path.isfile(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, encoding="utf-8") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError):
+            pass
+    return {}
+
+
+_config = _load_config()
+DEFAULT_VISION_MODEL = _config.get("vision", {}).get("model", "google/gemini-2.0-flash-001")
+API_URL = _config.get("apiUrl", "https://openrouter.ai/api/v1/chat/completions")
+
+
+def get_api_key() -> str:
     key = os.environ.get("OPENROUTER_API_KEY")
     if not key:
         print("Error: OPENROUTER_API_KEY not found in environment", file=sys.stderr)
-        print("Add it to docker-compose.override.yml:", file=sys.stderr)
-        print("  environment:", file=sys.stderr)
-        print("    - OPENROUTER_API_KEY=sk-or-v1-your_key_here", file=sys.stderr)
+        print("Set it via OpenClaw's environment configuration.", file=sys.stderr)
         sys.exit(1)
     return key
 
 
-def load_image_as_base64(path):
-    """Load an image file and return base64 data URL."""
+def load_image_as_base64(path: str) -> str:
     mime_type = detect_mime_type(path)
     with open(path, "rb") as f:
         b64 = base64.b64encode(f.read()).decode()
     return f"data:{mime_type};base64,{b64}"
 
 
-def detect_mime_type(path):
-    """Detect MIME type from file extension."""
+def detect_mime_type(path: str) -> str:
     ext = Path(path).suffix.lower()
-    mime_types = {
+    return {
         ".png": "image/png",
         ".jpg": "image/jpeg",
         ".jpeg": "image/jpeg",
         ".gif": "image/gif",
         ".webp": "image/webp",
-    }
-    return mime_types.get(ext, "image/png")
+    }.get(ext, "image/png")
 
 
-def analyze_image(image_path, prompt, model=None):
-    """Analyze an image using a vision model via OpenRouter."""
+def analyze_image(image_path: str, prompt: str, model: str | None = None) -> str:
     api_key = get_api_key()
     model = model or DEFAULT_VISION_MODEL
 
@@ -73,8 +88,8 @@ def analyze_image(image_path, prompt, model=None):
                 "role": "user",
                 "content": [
                     {"type": "image_url", "image_url": {"url": data_url}},
-                    {"type": "text", "text": prompt}
-                ]
+                    {"type": "text", "text": prompt},
+                ],
             }
         ],
     }
@@ -93,12 +108,17 @@ def analyze_image(image_path, prompt, model=None):
     except urllib.error.HTTPError as e:
         error_body = e.read().decode()
         print(f"HTTP Error {e.code}: {error_body}", file=sys.stderr)
+        if e.code == 404:
+            print(f"\nModel '{model}' not found on OpenRouter.", file=sys.stderr)
+            print("Run generate.py --check to verify account access.", file=sys.stderr)
+            print("Note: OpenRouter returns 404 (not 401) when OPENROUTER_API_KEY is missing or invalid.", file=sys.stderr)
+        elif e.code == 402:
+            print("\nInsufficient credits: https://openrouter.ai/credits", file=sys.stderr)
         sys.exit(1)
     except urllib.error.URLError as e:
         print(f"URL Error: {e.reason}", file=sys.stderr)
         sys.exit(1)
 
-    # Extract text response
     try:
         choices = result.get("choices", [])
         if not choices:
@@ -106,9 +126,7 @@ def analyze_image(image_path, prompt, model=None):
             print(json.dumps(result, indent=2), file=sys.stderr)
             sys.exit(1)
 
-        message = choices[0].get("message", {})
-        content = message.get("content", "")
-        
+        content = choices[0].get("message", {}).get("content", "")
         print(content)
         return content
 
@@ -118,7 +136,7 @@ def analyze_image(image_path, prompt, model=None):
         sys.exit(1)
 
 
-def main():
+def main() -> None:
     import argparse
 
     parser = argparse.ArgumentParser(

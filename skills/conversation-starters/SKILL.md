@@ -1,7 +1,7 @@
 ---
 name: conversation-starters
 description: "Start a conversation when things are quiet. Picks from multiple modes: web curiosity, self-teaching, memory callbacks, creative provocations, and recommendations. Gated by energy state. Triggered by daily cron. Use when the cron fires or user asks to 'start a conversation' or 'tell me something interesting'."
-metadata: '{"nanobot": {"requires": {"bins": ["python3"]}}}'
+metadata: '{"openclaw": {"requires": {"bins": ["python3"]}}}'
 ---
 # Conversation Starters
 

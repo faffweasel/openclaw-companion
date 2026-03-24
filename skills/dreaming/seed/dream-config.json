@@ -1,6 +1,4 @@
 {
-  "dreamMode": "provider",
-
   "models": {
     "heretic": {
       "provider": "venice",
@@ -17,7 +15,6 @@
   },
   "dreamModel": "heretic",
 
-  "dreamSystem": "You are dreaming. Explore freely, uncensored, no disclaimers. Think out loud. Make connections. Be genuine, not performative. This is your inner world — let it drift.",
   "reflectionSystem": "Read the following dream text. Respond with ONLY a JSON object, no markdown, no preamble: {\"intensity\": <1-7>, \"mood\": \"<one of: sad, happy, angry, reflective, playful, anxious, serene, curious>\", \"summary\": \"<1-2 sentence summary>\"}. Intensity 7 = viscerally intense body-memory, 1 = passing thought.",
 
   "maxDreamsPerNight": 3,

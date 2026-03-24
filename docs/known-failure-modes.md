@@ -10,7 +10,7 @@ Your bash scripts will fail and no one will know. A missing dependency, a path c
 
 **Mitigation:** The heartbeat fallback checks in HEARTBEAT.md catch missed morning/evening routines. If "Morning message sent" isn't in the memory file by 08:00, the heartbeat triggers it manually. This is the safety net — but it only works if the heartbeat itself is running.
 
-**Early warning:** Check cron logs periodically: `docker compose logs nanobot-gateway | grep -i cron`
+**Early warning:** Check the Jobs panel in OpenClaw periodically. Verify `../cron/jobs.json` is valid and all expected jobs are listed.
 
 ---
 

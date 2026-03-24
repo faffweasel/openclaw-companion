@@ -1,25 +1,25 @@
 ---
 name: openrouter-image-simple
-description: Generate, edit, and analyze images via OpenRouter using pure Python stdlib. Zero dependencies. Supports Gemini 2.5 Flash image generation and vision analysis.
-metadata: '{"nanobot":{"emoji":"🎨","requires":{"bins":["python3"],"env":["OPENROUTER_API_KEY"]}}}'
+description: Generate, edit, and analyze images via OpenRouter using pure Python stdlib. Zero dependencies. Supports multiple image generation models and vision analysis.
+metadata: '{"openclaw":{"emoji":"🎨","requires":{"bins":["python3"],"env":["OPENROUTER_API_KEY"]}}}'
 ---
 
 # OpenRouter Image Simple
 
-Generate, edit, and analyze images via OpenRouter. Multiple models supported including Gemini 2.5 Flash Image. Pure Python stdlib — no pip installs needed.
+Generate, edit, and analyze images via OpenRouter. Pure Python stdlib — no pip installs needed.
 
 ## Prerequisites
 
 - **Python 3.10+**
-- **OpenRouter API key** — see `docs/setup-reference.md` for Docker environment configuration
+- **OpenRouter API key** — set via OpenClaw's environment configuration as `OPENROUTER_API_KEY`
 
 ## Setup
 
 1. Get your API key at [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys) (starts with `sk-or-v1-`)
-2. Add to `docker-compose.override.yml` per `docs/setup-reference.md`
-3. Verify:
+2. Add to OpenClaw's environment configuration
+3. Verify account access and available models:
    ```bash
-   python3 skills/openrouter-image-simple/scripts/generate.py "A test image" /tmp/test.png
+   python3 skills/openrouter-image-simple/scripts/generate.py --check
    ```
 
 ## Quick Start
@@ -39,16 +39,16 @@ python3 skills/openrouter-image-simple/scripts/generate.py "Make it sunset light
 
 ```bash
 python3 skills/openrouter-image-simple/scripts/generate.py "Misty mountains at sunrise" mountains.png
-python3 skills/openrouter-image-simple/scripts/generate.py "prompt" output.png --model google/gemini-2.5-flash-image-preview:floor
+python3 skills/openrouter-image-simple/scripts/generate.py "prompt" output.png --model gemini-pro
 python3 skills/openrouter-image-simple/scripts/generate.py "Add a rainbow" rainbow.png --input mountains.png
 ```
 
-**Key flags:** `prompt` (positional or `--prompt`), `output` (positional or `--output`), `--input` (source image for editing), `--model` (default: `google/gemini-2.5-flash-image-preview`)
+**Flags:** `prompt` (positional or `--prompt`), `output` (positional or `--output`), `--input` (source image for editing), `--model` (alias or full model ID), `--check` (account diagnostics)
 
 Both calling conventions work:
 ```bash
-python3 .../generate.py "a cat" cat.webp           # positional
-python3 .../generate.py --prompt "a cat" --output cat.webp  # IMAGE_GEN_CMD compatible
+python3 .../generate.py "a cat" cat.webp                         # positional
+python3 .../generate.py --prompt "a cat" --output cat.webp       # IMAGE_GEN_CMD compatible
 ```
 
 Supported input formats: PNG, JPG, JPEG, GIF, WEBP.
@@ -60,17 +60,40 @@ python3 skills/openrouter-image-simple/scripts/analyze.py image.png "Describe wh
 python3 skills/openrouter-image-simple/scripts/analyze.py image.png "prompt" --model google/gemini-2.0-flash-001
 ```
 
-**Key flags:** `image` (positional), `prompt` (positional), `--model` (default: `google/gemini-2.0-flash-001`)
+## Configuration
 
-## Available Models
+Models and aliases are configured in `skills-data/openrouter-image-simple/config.json` (seeded from `seed/config.json` during setup). To change the default model or add aliases, edit that file — no script changes needed.
 
-**Image Generation:**
-- `google/gemini-2.5-flash-image-preview` (default) — text + image output
-- `google/gemini-2.5-flash-image-preview:floor` — faster, cheaper variant
+```json
+{
+  "generation": {
+    "model": "google/gemini-2.5-flash-image",
+    "aliases": { "gemini": "google/gemini-2.5-flash-image", ... }
+  },
+  "vision": {
+    "model": "google/gemini-2.0-flash-001"
+  }
+}
+```
 
-**Image Analysis (Vision):**
-- `google/gemini-2.0-flash-001` (default)
-- Any OpenRouter model with vision capabilities
+## Available Models (March 2026)
+
+**Image Generation** — verified on OpenRouter:
+
+| Alias | Model ID | Notes |
+|---|---|---|
+| `gemini` | `google/gemini-2.5-flash-image` | Default. Cheapest Gemini. |
+| `gemini-3.1` | `google/gemini-3.1-flash-image-preview` | Faster |
+| `gemini-pro` | `google/gemini-3-pro-image-preview` | Highest quality Gemini |
+| `sourceful` | `sourceful/riverflow-v2-fast` | Fast, production-grade |
+| `sourceful-pro` | `sourceful/riverflow-v2-pro` | Highest quality non-Gemini |
+| `seedream` | `bytedance-seed/seedream-4.5` | ByteDance |
+| `gpt-image` | `openai/gpt-5-image-mini` | GPT-5 image |
+| `flux` | `sourceful/riverflow-v2-fast` | Alias (Flux removed from OpenRouter) |
+
+**Vision:** `google/gemini-2.0-flash-001` (default), or any OpenRouter vision model.
+
+Run `generate.py --check` to see what's currently available on your account.
 
 ## Output
 
@@ -78,8 +101,18 @@ python3 skills/openrouter-image-simple/scripts/analyze.py image.png "prompt" --m
 
 ## Troubleshooting
 
-**"OPENROUTER_API_KEY not found"** — See `docs/setup-reference.md` for Docker environment setup. Restart with `docker compose up -d` after changes.
+**First step for any failure:** run `--check` to verify account access and model availability.
 
-**"No images in response"** — Model may not support generation. Try the default model. Check OpenRouter credit balance.
+```bash
+python3 skills/openrouter-image-simple/scripts/generate.py --check
+```
 
-**"HTTP Error 429"** — Rate limited. Wait and retry.
+**"HTTP 404"** — Model not found, or `OPENROUTER_API_KEY` is missing/invalid. OpenRouter returns 404 (not 401) for auth failures. Run `--check` to confirm which.
+
+**"OPENROUTER_API_KEY not found"** — Set it via OpenClaw's environment configuration.
+
+**"No images in response"** — Model may not support image generation. Run `--check` and pick a model from the available list.
+
+**"HTTP 402"** — Insufficient credits. Top up at [openrouter.ai/credits](https://openrouter.ai/credits).
+
+**"HTTP 429"** — Rate limited. Wait and retry.

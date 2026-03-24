@@ -1,7 +1,7 @@
 ---
 name: continuity-check
 description: "Personality drift detection after model switches. Stores rolling analyses with marker scores. Drift velocity tracking after 5+ entries. Use at session start to detect model changes, on demand, or chained from weekly reflection."
-metadata: '{"nanobot": {"requires": {"bins": ["python3"]}}}'
+metadata: '{"openclaw": {"requires": {"bins": ["python3"]}}}'
 ---
 
 # Continuity Check

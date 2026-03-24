@@ -156,7 +156,7 @@ skills-data/preference-accumulation/
 ### File Structure
 
 ```
-~/.nanobot/workspace/
+~/.openclaw/workspace/
 ├── .learnings/
 │   ├── LEARNINGS.md
 │   ├── ERRORS.md
@@ -252,7 +252,6 @@ The topics file is the agent's creative curriculum — curate it like one.
 
 ### Dependencies
 
-- **multi-provider** skill (API routing)
 - **preconscious** skill (receives high-intensity dreams)
 - **selfie** skill (optional — character-consistent dream images)
 - **morning-routine** skill (reads dream output, optional)
@@ -276,9 +275,9 @@ Different models express the same SOUL.md differently. Some are better at humor,
 others at pushback, others at warmth. This test produces a consistent scorecard
 so you can compare models and decide which to use for what.
 
-In Nanobot, you might route: Kimi for daily conversation, Opus for soul work,
-Haiku for quick tasks. This test tells you whether those routing decisions are
-correct — does Kimi actually express your personality, or does it flatten it?
+In OpenClaw, you might route: one model for daily conversation, Opus for soul work,
+a faster model for quick tasks. This test tells you whether those routing decisions are
+correct — does your default model actually express your personality, or does it flatten it?
 
 After 5+ tests, a longitudinal trend summary shows which dimensions are most
 model-sensitive and which are stable across all models.
@@ -543,7 +542,7 @@ memory/reflections/
 
 - Python 3 with sqlite3
 - An embedding provider API key for semantic search (optional — FTS5 works without)
-- `OPENROUTER_API_KEY` in `docker-compose.override.yml` enables semantic search
+- `OPENROUTER_API_KEY` in OpenClaw environment config enables semantic search
 
 ### Output Files
 

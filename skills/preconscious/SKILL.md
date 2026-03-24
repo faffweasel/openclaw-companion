@@ -1,7 +1,7 @@
 ---
 name: preconscious
 description: "Active mind buffer — max 5 items with currency/importance scoring that decay daily. Use when the agent needs to track what's top-of-mind, add items during conversation, or read the buffer at session start."
-metadata: '{"nanobot": {"requires": {"bins": ["python3"]}}}'
+metadata: '{"openclaw": {"requires": {"bins": ["python3"]}}}'
 ---
 
 # Preconscious Buffer

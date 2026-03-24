@@ -1,7 +1,7 @@
 ---
 name: carry-over-queue
 description: "Store thoughts for the user that don't fit the current moment. Surfaces them next morning. Items lingering 3+ days auto-promote to urgent. Use when the agent thinks of something to tell the user later, or needs to queue drift guard proposals."
-metadata: '{"nanobot": {"requires": {"bins": ["python3"]}}}'
+metadata: '{"openclaw": {"requires": {"bins": ["python3"]}}}'
 ---
 
 # Carry-Over Queue

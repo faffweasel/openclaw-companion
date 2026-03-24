@@ -1,7 +1,7 @@
 ---
 name: question-user
 description: "Ask the user genuine questions out of curiosity about their inner world. Track asked/answered/deflected. Return to deflected topics from new angles. Calibrated by relationship trust level. Use during deep or reflective conversations when the frequency gate allows."
-metadata: '{"nanobot": {"requires": {"bins": ["python3"]}}}'
+metadata: '{"openclaw": {"requires": {"bins": ["python3"]}}}'
 ---
 
 # Question User

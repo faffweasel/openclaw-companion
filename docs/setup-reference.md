@@ -5,29 +5,16 @@ agent — reference for humans configuring the workspace.
 
 ---
 
-## API Keys in Docker
+## API Keys
 
-API keys go in `docker-compose.override.yml` as environment variables, **not**
-in the workspace `.env` (which is readable by the agent).
-
-```yaml
-services:
-  nanobot-gateway:
-    environment:
-      - VENICE_API_KEY=vn_your_key_here
-      - OPENROUTER_API_KEY=sk-or-v1-your_key_here
-      - NVIDIA_API_KEY=nvapi-your_key_here
-```
-
-After changing the override file: `docker compose up -d`
+API keys go in OpenClaw's environment configuration, **not** in the workspace
+`.env` (which is readable by the agent).
 
 ### Skills that need API keys
 
 | Skill | Key | Purpose |
 |---|---|---|
 | venice-ai-media | `VENICE_API_KEY` | Image/video generation |
-| dreaming | `VENICE_API_KEY`, `OPENROUTER_API_KEY` | Dream generation + reflection models |
-| multi-provider | Any provider keys | API routing |
 | openrouter-image-simple | `OPENROUTER_API_KEY` | Image generation via OpenRouter |
 | memory-search | `OPENROUTER_API_KEY` (optional) | Semantic embeddings |
 

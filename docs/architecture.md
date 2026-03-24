@@ -22,7 +22,7 @@ Four layers, each independent and portable.
 └─────────────────────────────────────────────┘
 ```
 
-Each layer can be replaced independently. Swap SOUL.md and you have a different agent. Swap the skill layer and you have different capabilities. Move from Nanobot to another framework and the identity, memory, and skills come with you — only the operational layer adapts.
+Each layer can be replaced independently. Swap SOUL.md and you have a different agent. Swap the skill layer and you have different capabilities. Move to another framework and the identity, memory, and skills come with you — only the operational layer adapts.
 
 ---
 
@@ -75,7 +75,7 @@ energy-state.json           # Energy/engagement level (read at session start)
 location.json               # Current + home location for location-aware skills
 ```
 
-**Loading rules:** Nanobot auto-loads MEMORY.md, SOUL.md, USER.md, IDENTITY.md, and TOOLS.md every turn. Daily memory and preconscious load at session start via AGENTS.md instructions. Everything else loads on demand — when a person is mentioned, a project referenced, or older context needed.
+**Loading rules:** OpenClaw auto-loads MEMORY.md, SOUL.md, USER.md, IDENTITY.md, and TOOLS.md every turn. Daily memory and preconscious load at session start via AGENTS.md instructions. Everything else loads on demand — when a person is mentioned, a project referenced, or older context needed.
 
 **MEMORY.md** is a lightweight index: critical facts, pointers to people/project files, and a handful of lessons. Target under 50 lines. Rich context lives in `key-memories.md`, searched via grep when needed. This keeps the per-turn auto-load cost predictable.
 
@@ -101,7 +101,7 @@ skills-data/example-skill/     ← Gitignored runtime state
 
 This split means `git pull` updates framework code (procedures, scripts, bug fixes) without overwriting instance state (your preferences, your queue, your analyses).
 
-Skills are either **core** (always installed) or **companion** (opt-in). The wizard installs selected skills and writes cron job definitions to `pending-crons.json` for the agent to register on first startup.
+Skills are either **core** (always installed) or **companion** (opt-in). The wizard installs selected skills and writes cron job definitions to `../cron/jobs.json` for OpenClaw to execute automatically.
 
 ---
 
@@ -111,7 +111,6 @@ Skills are either **core** (always installed) or **companion** (opt-in). The wiz
 
 ```
 Agent wakes up
-  → if pending-crons.json exists → register crons via nanobot cron add → delete file
   → reads SOUL.md, IDENTITY.md, USER.md
   → reads today's + yesterday's memory
   → runs preconscious/read.py → gets top-of-mind items
@@ -169,7 +168,7 @@ Agent surfaces 0-1 items to preconscious (if genuinely worth mentioning)
 offline-reflection/stamp.sh → marks complete
 ```
 
-### Evening Cron (23:30)
+### Evening Cron (23:55)
 
 ```
 evening-routine/prepare.sh → idempotency check
@@ -203,15 +202,15 @@ Agent chains to self-analysis (if installed)
 ### Dream Cron (02:30)
 
 ```
-dreaming/dream.py
+OpenClaw starts isolated session as the dream model (set in jobs.json payload.model)
+Agent follows skills/dreaming/SKILL.md:
   → for each dream (up to maxDreamsPerNight):
       → should-dream.py → quiet hours? under limit? → picks topic
       → gathers memory fragments (yesterday + random archival)
-      → multi-provider → calls dreamModel (heretic) for dream text
+      → generates dream text natively (agent IS the dream model)
       → writes to memory/dreams/YYYY-MM-DD.md
-      → post-dream.py → sends dream to topic's reflection model
-        → scores intensity (1-7) + mood
-        → if intensity ≥ 5 → preconscious/add.py
+      → scores intensity (1-7) + mood
+      → if intensity ≥ 5 → preconscious/add.py
       → if IMAGE_EDIT_CMD set → character image with reference
       → if IMAGE_GEN_CMD set (abstract style) → abstract image
 ```
@@ -235,27 +234,13 @@ BLOG_CHECK_DAYS                                # Blog proposal frequency
 
 Move the workspace → update WORKSPACE in `.env` → everything follows.
 
-### API Keys — docker-compose.override.yml
+### API Keys
 
 API keys that can spend money (VENICE_API_KEY, OPENROUTER_API_KEY, etc.) must **not** go in `.env` — that file lives in the workspace and is readable by the agent.
 
-Instead, pass them as environment variables via `docker-compose.override.yml` on the host:
+Set them via OpenClaw's environment configuration instead. Scripts read these via `os.environ` / `$ENV_VAR`.
 
-```yaml
-services:
-  nanobot-gateway:
-    environment:
-      - VENICE_API_KEY=vn_your_key_here
-      - OPENROUTER_API_KEY=sk-or-v1-your_key_here
-```
-
-Scripts read these via `os.environ` / `$ENV_VAR`. The agent can't access the override file because it's outside the mounted volume. The nanobot `config.json` API keys already follow this pattern (stored in `~/.nanobot/`, not the workspace).
-
-**Rule of thumb:** If it's a path, a feature flag, or a non-secret identifier → `.env`. If it's an API key or token → `docker-compose.override.yml`.
-
-### Nanobot config.json
-
-Nanobot's `config.json` (at `~/.nanobot/config.json`) is **not managed by setup.sh**. Provider configuration, Telegram setup, model defaults, and channel settings are configured via `nanobot onboard` and manual editing. The companion framework reads from it (e.g. Telegram chat ID) but never writes to it.
+**Rule of thumb:** If it's a path, a feature flag, or a non-secret identifier → `.env`. If it's an API key or token → OpenClaw environment config.
 
 ### Script Preamble
 
@@ -282,7 +267,7 @@ Then reference `$SKILL_DATA/buffer.json` instead of `$SKILL_DIR/data/buffer.json
 
 ## Cron Pattern
 
-Cron jobs are registered automatically on first startup. The setup wizard writes `pending-crons.json` to the workspace root. On the agent's first session, AGENTS.md instructs it to read the file, register each entry via `nanobot cron add`, and delete the file. This solves the bootstrap problem — cron registration itself requires the agent to be running inside the container.
+Cron jobs are defined in `../cron/jobs.json` (one level up from the workspace). The setup wizard generates this file automatically with all selected skills' schedules, using the OpenClaw job format. OpenClaw reads it directly — no manual registration or agent bootstrapping needed.
 
 Cron jobs fire one-line messages that reference SKILL.md:
 
@@ -312,7 +297,7 @@ Each skill declares metadata:
 }
 ```
 
-The wizard reads manifests to check dependencies and generate `pending-crons.json`. Type values: `core` (always installed), `companion` (opt-in).
+The wizard reads manifests to check dependencies. Type values: `core` (always installed), `companion` (opt-in).
 
 ---
 
@@ -324,4 +309,4 @@ This architecture requires four things from the framework:
 3. The agent loads AGENTS.md and identity files at session start
 4. You can route different tasks to different models (helpful, not essential)
 
-OpenClaw, Nanobot, or a raw API loop with file reads — the patterns are the same. AGENTS.md is the portability layer.
+OpenClaw or any other framework with file access and cron scheduling — the patterns are the same. AGENTS.md is the portability layer.

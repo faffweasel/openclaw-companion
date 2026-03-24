@@ -82,10 +82,9 @@ if memory_info["exists"]:
         with open(memory_md) as f:
             memory_info["memory_md_lines"] = len(f.readlines())
 
-# --- Check Nanobot ---
+# --- Check environment ---
 import shutil
 nanobot_info = {
-    "nanobot_in_path": shutil.which("nanobot") is not None,
     "python3_in_path": shutil.which("python3") is not None,
 }
 
@@ -94,7 +93,7 @@ blueprint = {
     "generated": now.isoformat(),
     "hostname": os.uname().nodename if hasattr(os, "uname") else "unknown",
     "workspace": WORKSPACE,
-    "framework": "nanobot",
+    "framework": "openclaw",
     "skills": skills,
     "skills_data": skills_data_contents,
     "identity_files": identity_files,

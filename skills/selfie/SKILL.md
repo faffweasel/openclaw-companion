@@ -1,7 +1,7 @@
 ---
 name: selfie
 description: Generate character-consistent companion images using reference photo editing. Mood-aware, setting-aware, with signature visual elements. Called directly ("send a selfie") or by dreaming for character dream images.
-metadata: '{"nanobot":{"emoji":"📸","requires":{"bins":["python3"],"env":["IMAGE_EDIT_CMD"]}}}'
+metadata: '{"openclaw":{"emoji":"📸","requires":{"bins":["python3"],"env":["IMAGE_EDIT_CMD"]}}}'
 ---
 
 # Selfie

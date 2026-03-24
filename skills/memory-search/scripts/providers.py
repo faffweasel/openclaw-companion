@@ -3,7 +3,7 @@
 Embedding provider abstraction for memory-search.
 
 Reads skills-data/memory-search/config.json for provider config.
-API keys come from environment variables (same ones as multi-provider).
+API keys come from environment variables (OPENROUTER_API_KEY or equivalent).
 All HTTP calls use urllib (stdlib) — no pip dependencies.
 
 Supported formats:
@@ -16,6 +16,8 @@ Usage:
     vectors = embedder(["text1", "text2"])  # list of float lists
 """
 
+from __future__ import annotations
+
 import json
 import os
 import struct
@@ -23,7 +25,7 @@ import sys
 import urllib.error
 import urllib.request
 
-# Workspace detection — same pattern as multi-provider
+# Workspace detection
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SKILL_DIR = os.path.dirname(SCRIPT_DIR)
 SKILL_NAME = os.path.basename(SKILL_DIR)
@@ -33,7 +35,7 @@ DATA_DIR = os.environ.get("DATA_DIR", os.path.join(WORKSPACE, "skills-data"))
 SKILL_DATA = os.path.join(DATA_DIR, SKILL_NAME)
 CONFIG_FILE = os.path.join(SKILL_DATA, "config.json")
 
-USER_AGENT = "Mozilla/5.0 (nanobot-companion memory-search)"
+USER_AGENT = "Mozilla/5.0 (openclaw-companion memory-search)"
 
 
 def load_config() -> dict:

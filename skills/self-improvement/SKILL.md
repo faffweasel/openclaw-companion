@@ -1,7 +1,7 @@
 ---
 name: self-improvement
 description: "Captures learnings, errors, and corrections to .learnings/ files for continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects the agent — 'No, that's wrong', 'Actually...', 'That's outdated', (3) User requests a capability that doesn't exist, (4) An external API or tool fails, (5) Agent discovers its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task, (7) User says 'log this', 'learn this', 'remember this mistake', 'save this as a learning', 'save this as a skill'. Also load before major tasks to review pending learnings."
-metadata: '{"nanobot":{"emoji":"📝","requires":{"bins":["python3"]}}}'
+metadata: '{"openclaw":{"emoji":"📝","requires":{"bins":["python3"]}}}'
 ---
 
 # Self-Improvement

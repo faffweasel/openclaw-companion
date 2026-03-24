@@ -16,6 +16,8 @@ Usage:
 Output: ranked results with source file, line range, heading, and snippet.
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import os

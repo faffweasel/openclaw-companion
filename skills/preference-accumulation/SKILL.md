@@ -1,7 +1,7 @@
 ---
 name: preference-accumulation
 description: "Track the agent's own emerging preferences, tastes, and patterns. Detect tensions between contradictory preferences. Use when you notice something about your own style, taste, or approach solidifying during conversation or evening reflection."
-metadata: '{"nanobot": {}}'
+metadata: '{"openclaw": {}}'
 ---
 # Preference Accumulation
 

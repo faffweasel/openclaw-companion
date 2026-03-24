@@ -16,6 +16,8 @@ SHA-256 content hashing ensures unchanged chunks are never re-embedded.
 Runs during evening routine or on demand.
 """
 
+from __future__ import annotations
+
 import argparse
 import hashlib
 import json

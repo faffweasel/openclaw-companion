@@ -21,7 +21,7 @@ COMPANION_REFERENCE_IMAGE="${WORKSPACE}/identity/reference.webp"
 
 `IMAGE_GEN_CMD` and `IMAGE_EDIT_CMD` are full command paths. `COMPANION_REFERENCE_IMAGE` is a file path. All stored in workspace `.env` (paths, not secrets).
 
-API keys belong in `docker-compose.override.yml`, never in `.env`. See [architecture.md](architecture.md) for details.
+API keys belong in `OpenClaw's environment configuration`, never in `.env`. See [architecture.md](architecture.md) for details.
 
 ---
 
@@ -47,7 +47,7 @@ The script must:
 5. Print `MEDIA: /path/to/file` to stdout on success
 6. Exit 0 on success, non-zero on failure
 7. Print errors to stderr, not stdout
-8. Read its API key from an environment variable (set via `docker-compose.override.yml`)
+8. Read its API key from an environment variable (set via `OpenClaw's environment configuration`)
 
 ## Callers (IMAGE_GEN_CMD)
 
@@ -131,6 +131,6 @@ Both also support direct usage with additional flags beyond the standard interfa
 1. Implement `--prompt` + `--output` for `IMAGE_GEN_CMD` compatibility
 2. Optionally implement `--input` + `--prompt` + `--output` for `IMAGE_EDIT_CMD`
 3. Read the API key from an environment variable, not from workspace files
-4. Document the env var with setup instructions pointing to `docker-compose.override.yml`
+4. Document the env var with setup instructions pointing to `OpenClaw's environment configuration`
 5. Add the skill to the table above
 6. Add an entry to `docs/skills-catalogue.md`

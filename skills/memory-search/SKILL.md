@@ -1,7 +1,7 @@
 ---
 name: memory-search
 description: "Semantic and keyword search across all memory files — daily logs, people, projects, dreams, learnings. Use when: (1) searching for past conversations, decisions, or context, (2) user asks 'what did we discuss about...', 'when did we decide...', 'what do you remember about...', (3) looking up a person, project, or topic across multiple memory files, (4) needing to find related context before answering a question about past events, (5) any memory search where the exact wording is unknown. Prefer this over grep for any search that isn't a simple exact-string lookup."
-metadata: '{"nanobot":{"emoji":"🔍","requires":{"bins":["python3"]}}}'
+metadata: '{"openclaw":{"emoji":"🔍","requires":{"bins":["python3"]}}}'
 ---
 
 # Memory Search

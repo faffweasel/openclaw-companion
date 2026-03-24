@@ -1,7 +1,7 @@
 #!/bin/bash
-# nanobot-companion setup wizard
+# openclaw-companion setup wizard
 # Generates config files and seeds runtime data in the workspace.
-# The repo IS the workspace — clone it as ~/.nanobot/workspace, then run this.
+# The repo IS the workspace — clone it as ~/.openclaw/workspace, then run this.
 # Usage: bash setup.sh
 
 set -euo pipefail
@@ -19,8 +19,8 @@ YELLOW='\033[0;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-echo -e "${BOLD}nanobot-companion setup${NC}"
-echo "======================"
+echo -e "${BOLD}openclaw-companion setup${NC}"
+echo "========================"
 echo ""
 echo -e "Workspace: ${BOLD}${WORKSPACE}${NC}"
 echo ""
@@ -28,7 +28,7 @@ echo ""
 # Sanity check
 if [ ! -d "${SKILLS_SRC}" ] || [ ! -d "${TEMPLATES}" ]; then
   echo -e "${RED}Error: skills/ or templates/ not found.${NC}"
-  echo "Run this script from the nanobot-companion repo root."
+  echo "Run this script from the openclaw-companion repo root."
   exit 1
 fi
 
@@ -40,13 +40,6 @@ if [ -f "${WORKSPACE}/AGENTS.md" ]; then
     echo "Aborted."
     exit 0
   fi
-fi
-
-# --- Detect existing config ---
-CONFIG_JSON="${WORKSPACE}/../config.json"
-if [ ! -f "$CONFIG_JSON" ]; then
-  echo -e "${YELLOW}Warning: config.json not found at ${CONFIG_JSON}${NC}"
-  echo "Run 'nanobot onboard' first if you haven't already."
 fi
 
 # Try to detect agent name
@@ -142,13 +135,13 @@ IMAGE_SKILL_CHOICE="${IMAGE_SKILL_CHOICE:-4}"
 
 IMAGE_GEN_CMD="" ; IMAGE_EDIT_CMD="" ; IMAGE_SKILLS=""
 case "$IMAGE_SKILL_CHOICE" in
-  1) IMAGE_GEN_CMD="python3 \${SKILLS_DIR}/venice-ai-media/scripts/venice-image.py"
-     IMAGE_EDIT_CMD="python3 \${SKILLS_DIR}/venice-ai-media/scripts/venice-edit.py"
+  1) IMAGE_GEN_CMD="python3 ${WORKSPACE}/skills/venice-ai-media/scripts/venice-image.py"
+     IMAGE_EDIT_CMD="python3 ${WORKSPACE}/skills/venice-ai-media/scripts/venice-edit.py"
      IMAGE_SKILLS="venice-ai-media" ;;
-  2) IMAGE_GEN_CMD="python3 \${SKILLS_DIR}/openrouter-image-simple/scripts/generate.py"
+  2) IMAGE_GEN_CMD="python3 ${WORKSPACE}/skills/openrouter-image-simple/scripts/generate.py"
      IMAGE_SKILLS="openrouter-image-simple" ;;
-  3) IMAGE_GEN_CMD="python3 \${SKILLS_DIR}/venice-ai-media/scripts/venice-image.py"
-     IMAGE_EDIT_CMD="python3 \${SKILLS_DIR}/venice-ai-media/scripts/venice-edit.py"
+  3) IMAGE_GEN_CMD="python3 ${WORKSPACE}/skills/venice-ai-media/scripts/venice-image.py"
+     IMAGE_EDIT_CMD="python3 ${WORKSPACE}/skills/venice-ai-media/scripts/venice-edit.py"
      IMAGE_SKILLS="venice-ai-media openrouter-image-simple" ;;
   *) ;;
 esac
@@ -157,25 +150,14 @@ echo ""
 echo -e "${BOLD}Companion Capabilities${NC}"
 echo ""
 ask_skill "preference-accumulation" "Should I track my own developing preferences and detect tensions between them?" "Y"
-ask_skill "multi-provider" "Should I be able to use different AI models for different tasks?" "Y"
 ask_skill "dreaming" "Should I dream at night?" "Y"
 
-DREAM_MODE="agent" ; DREAM_COUNT=2 ; DREAM_IMAGES=false ; DREAM_IMAGE_THRESHOLD=4
+DREAM_MODEL="heretic" ; DREAM_COUNT=2 ; DREAM_IMAGES=false ; DREAM_IMAGE_THRESHOLD=4
 if echo "$SKILLS_SELECTED" | grep -q "dreaming"; then
   echo ""
-  echo -e "${DIM}  Dreams can use your default model or a separate creative model.${NC}"
-  echo "    1) Default model — I dream as myself"
-  echo "    2) Separate creative model — dreams via a different, uncensored model"
-  read -rp "    Dream mode [1]: " DREAM_MODE_CHOICE
-  DREAM_MODE_CHOICE="${DREAM_MODE_CHOICE:-1}"
-  case "$DREAM_MODE_CHOICE" in
-    2) DREAM_MODE="provider"
-       if ! echo "$SKILLS_SELECTED" | grep -q "multi-provider"; then
-         SKILLS_SELECTED="${SKILLS_SELECTED} multi-provider"
-         echo -e "    ${DIM}(multi-provider auto-added)${NC}"
-       fi ;;
-    *) DREAM_MODE="agent" ;;
-  esac
+  echo -e "${DIM}  In OpenClaw, the dream model is set in the cron job — the agent runs natively as that model.${NC}"
+  read -rp "    Dream model name (from your model routing config) [heretic]: " DREAM_MODEL
+  DREAM_MODEL="${DREAM_MODEL:-heretic}"
   read -rp "    How many dreams per night? [2]: " DREAM_COUNT
   DREAM_COUNT="${DREAM_COUNT:-2}"
   if ! [[ "$DREAM_COUNT" =~ ^[0-9]+$ ]] || [ "$DREAM_COUNT" -lt 1 ] || [ "$DREAM_COUNT" -gt 10 ]; then
@@ -240,6 +222,9 @@ echo -e "${BOLD}Generating workspace files...${NC}"
 # --- .env ---
 sed \
   -e "s|__WORKSPACE__|${WORKSPACE}|g" \
+  -e "s|__MEMORY_DIR__|${WORKSPACE}/memory|g" \
+  -e "s|__SKILLS_DIR__|${WORKSPACE}/skills|g" \
+  -e "s|__DATA_DIR__|${WORKSPACE}/skills-data|g" \
   -e "s|__TIMEZONE__|${TIMEZONE}|g" \
   -e "s|__AGENT_NAME__|${AGENT_NAME}|g" \
   -e "s|__USER_NAME__|${USER_NAME}|g" \
@@ -250,8 +235,8 @@ sed -i "s|^IMAGE_EDIT_CMD=.*|IMAGE_EDIT_CMD=\"${IMAGE_EDIT_CMD}\"|" "${WORKSPACE
 sed -i "s|^BLOG_CHECK_DAYS=.*|BLOG_CHECK_DAYS=${BLOG_CHECK_DAYS}|" "${WORKSPACE}/.env"
 
 if echo "$SKILLS_SELECTED" | grep -q "selfie"; then
-  sed -i "s|^COMPANION_REFERENCE_PORTRAIT=.*|COMPANION_REFERENCE_PORTRAIT=\"\${WORKSPACE}/identity/reference-portrait.webp\"|" "${WORKSPACE}/.env"
-  sed -i "s|^COMPANION_REFERENCE_BODY=.*|COMPANION_REFERENCE_BODY=\"\${WORKSPACE}/identity/reference-body.webp\"|" "${WORKSPACE}/.env"
+  sed -i "s|^COMPANION_REFERENCE_PORTRAIT=.*|COMPANION_REFERENCE_PORTRAIT=\"${WORKSPACE}/identity/reference-portrait.webp\"|" "${WORKSPACE}/.env"
+  sed -i "s|^COMPANION_REFERENCE_BODY=.*|COMPANION_REFERENCE_BODY=\"${WORKSPACE}/identity/reference-body.webp\"|" "${WORKSPACE}/.env"
 fi
 echo -e "  ${GREEN}✓${NC} .env"
 
@@ -308,8 +293,15 @@ fi
 
 # --- Memory directory ---
 mkdir -p "${WORKSPACE}/memory"
-if [ -f "${TEMPLATES}/MEMORY.md.template" ] && [ ! -f "${WORKSPACE}/memory/MEMORY.md" ]; then
-  cp "${TEMPLATES}/MEMORY.md.template" "${WORKSPACE}/memory/MEMORY.md"
+# MEMORY.md lives at workspace root (auto-loaded every turn)
+if [ -f "${TEMPLATES}/MEMORY.md.template" ] && [ ! -f "${WORKSPACE}/MEMORY.md" ]; then
+  # Migrate from old location if present
+  if [ -f "${WORKSPACE}/memory/MEMORY.md" ]; then
+    mv "${WORKSPACE}/memory/MEMORY.md" "${WORKSPACE}/MEMORY.md"
+    echo -e "  ${YELLOW}↑${NC} Migrated MEMORY.md from memory/ to workspace root"
+  else
+    cp "${TEMPLATES}/MEMORY.md.template" "${WORKSPACE}/MEMORY.md"
+  fi
 fi
 if [ -f "${TEMPLATES}/key-memories.md.template" ] && [ ! -f "${WORKSPACE}/memory/key-memories.md" ]; then
   cp "${TEMPLATES}/key-memories.md.template" "${WORKSPACE}/memory/key-memories.md"
@@ -424,70 +416,132 @@ if echo "$SKILLS_SELECTED" | grep -q "dreaming"; then
 import json
 with open('${DREAM_CONFIG}', 'r') as f:
     cfg = json.load(f)
-cfg['dreamMode'] = '${DREAM_MODE}'
 cfg['maxDreamsPerNight'] = ${DREAM_COUNT}
 cfg['dreamImages'] = ${DREAM_IMAGES}
 cfg['dreamImageThreshold'] = ${DREAM_IMAGE_THRESHOLD}
 with open('${DREAM_CONFIG}', 'w') as f:
     json.dump(cfg, f, indent=2)
 "
-    echo -e "  ${GREEN}✓${NC} dream-config.json (mode: ${DREAM_MODE}, ${DREAM_COUNT}/night)"
+    echo -e "  ${GREEN}✓${NC} dream-config.json (model: ${DREAM_MODEL}, ${DREAM_COUNT}/night)"
   fi
 fi
 
 # ===========================================================================
-# Write pending-crons.json
+# Write ../cron/jobs.json (OpenClaw cron job definitions)
 # ===========================================================================
 echo ""
-echo -e "${BOLD}Writing pending-crons.json...${NC}"
+echo -e "${BOLD}Writing OpenClaw cron jobs...${NC}"
 
-CRON_ENTRIES="["
-CRON_ENTRIES="${CRON_ENTRIES}
-  {\"name\": \"morning-routine\", \"schedule\": \"5 7 * * *\", \"message\": \"Run the morning routine. Follow skills/morning-routine/SKILL.md step by step.\"},
-  {\"name\": \"evening-routine\", \"schedule\": \"30 23 * * *\", \"message\": \"Run the evening routine. Follow skills/evening-routine/SKILL.md step by step.\"}"
-
-if echo "$SKILLS_SELECTED" | grep -q "dreaming"; then
-  if [ "$DREAM_MODE" = "provider" ]; then
-    CRON_ENTRIES="${CRON_ENTRIES},
-  {\"name\": \"dreaming\", \"schedule\": \"30 2 * * *\", \"message\": \"Execute: python3 skills/dreaming/scripts/dream.py\"}"
-  else
-    CRON_ENTRIES="${CRON_ENTRIES},
-  {\"name\": \"dreaming\", \"schedule\": \"30 2 * * *\", \"message\": \"Run the dreaming routine. Follow skills/dreaming/SKILL.md step by step.\"}"
-  fi
+CRON_DIR="${WORKSPACE}/../cron"
+if [ ! -d "$CRON_DIR" ]; then
+  echo -e "  ${YELLOW}Creating ${CRON_DIR}${NC}"
+  mkdir -p "$CRON_DIR"
 fi
 
-if echo "$SKILLS_SELECTED" | grep -q "offline-reflection"; then
-  CRON_ENTRIES="${CRON_ENTRIES},
-  {\"name\": \"offline-reflection\", \"schedule\": \"0 4 * * *\", \"message\": \"Run the offline reflection. Follow skills/offline-reflection/SKILL.md step by step.\"}"
-fi
+CS_HOUR=$(echo "$CONVERSATION_STARTER_TIME" | cut -d: -f1)
+CS_MIN=$(echo "$CONVERSATION_STARTER_TIME" | cut -d: -f2)
 
-if echo "$SKILLS_SELECTED" | grep -q "weekly-state-of-me"; then
-  CRON_ENTRIES="${CRON_ENTRIES},
-  {\"name\": \"weekly-state-of-me\", \"schedule\": \"0 8 * * 0\", \"message\": \"Run the weekly reflection. Follow skills/weekly-state-of-me/SKILL.md step by step.\"}"
-fi
+python3 <<PYEOF
+import json, uuid, time
 
-if echo "$SKILLS_SELECTED" | grep -q "blog-writer" && [ "$BLOG_CHECK_DAYS" -gt 0 ]; then
-  CRON_ENTRIES="${CRON_ENTRIES},
-  {\"name\": \"blog-proposal\", \"schedule\": \"0 10 * * *\", \"message\": \"Run the blog proposal check. Follow the Proposal Check section in skills/blog-writer/SKILL.md.\"}"
-fi
+now_ms = int(time.time() * 1000)
+tz = "${TIMEZONE}"
+dream_model = "${DREAM_MODEL}"
+dream_count = ${DREAM_COUNT}
+skills = "${SKILLS_SELECTED}"
+cs_hour = "${CS_HOUR}"
+cs_min = "${CS_MIN}"
+blog_check_days = ${BLOG_CHECK_DAYS}
 
-if echo "$SKILLS_SELECTED" | grep -q "conversation-starters"; then
-  CS_HOUR=$(echo "$CONVERSATION_STARTER_TIME" | cut -d: -f1)
-  CS_MIN=$(echo "$CONVERSATION_STARTER_TIME" | cut -d: -f2)
-  CRON_ENTRIES="${CRON_ENTRIES},
-  {\"name\": \"conversation-starters\", \"schedule\": \"${CS_MIN} ${CS_HOUR} * * *\", \"message\": \"Run the conversation starter. Follow skills/conversation-starters/SKILL.md step by step.\"}"
-fi
+def job(name, expr, message, model=None, announce=False):
+    j = {
+        "id": str(uuid.uuid4()),
+        "name": name,
+        "enabled": True,
+        "createdAtMs": now_ms,
+        "updatedAtMs": now_ms,
+        "schedule": {"kind": "cron", "expr": expr, "tz": tz},
+        "sessionTarget": "isolated",
+        "wakeMode": "now",
+        "payload": {"kind": "agentTurn", "message": message},
+        "delivery": {"mode": "announce", "channel": "last"} if announce else {"mode": "none"},
+    }
+    if model:
+        j["payload"]["model"] = model
+    return j
 
-CRON_ENTRIES="${CRON_ENTRIES}
-]"
+jobs = [
+    job(
+        "Morning Routine",
+        "5 7 * * *",
+        "Use TZ=" + tz + " for all date operations.\n\n"
+        "Run the morning routine. Follow skills/morning-routine/SKILL.md step by step. "
+        "Output only the final greeting — no debug info, no step descriptions.\n\n"
+        "Exit silently after the greeting.",
+        announce=True,
+    ),
+    job(
+        "Evening Routine",
+        "55 23 * * *",
+        "Use TZ=" + tz + " for all date operations.\n\n"
+        "Run the evening routine. Follow skills/evening-routine/SKILL.md step by step.\n\n"
+        "Exit silently with NO_REPLY.",
+    ),
+]
 
-echo "$CRON_ENTRIES" | python3 -c "
-import json, sys
-data = json.load(sys.stdin)
-with open('${WORKSPACE}/pending-crons.json', 'w') as f:
+if "dreaming" in skills:
+    jobs.append(job(
+        "Dreaming",
+        "30 2 * * *",
+        "Use TZ=" + tz + " for all date operations.\n\n"
+        "Run the dreaming routine. Follow skills/dreaming/SKILL.md step by step. "
+        "Generate " + str(dream_count) + " dreams.\n\n"
+        "Exit silently with NO_REPLY after all dreams are written.",
+        model=dream_model,
+    ))
+
+if "offline-reflection" in skills:
+    jobs.append(job(
+        "Offline Reflection",
+        "0 4 * * *",
+        "Use TZ=" + tz + " for all date operations.\n\n"
+        "Run the offline reflection. Follow skills/offline-reflection/SKILL.md step by step.\n\n"
+        "Exit silently with NO_REPLY.",
+    ))
+
+if "weekly-state-of-me" in skills:
+    jobs.append(job(
+        "Weekly State of Me",
+        "0 8 * * 0",
+        "Use TZ=" + tz + " for all date operations.\n\n"
+        "Run the weekly reflection — two outputs required. Follow skills/weekly-state-of-me/SKILL.md step by step.\n\n"
+        "Do NOT send a message. Exit silently after saving.",
+    ))
+
+if "blog-writer" in skills and blog_check_days > 0:
+    jobs.append(job(
+        "Blog Proposal Check",
+        "0 10 * * *",
+        "Use TZ=" + tz + " for all date operations.\n\n"
+        "Run the blog proposal check. Follow the Proposal Check section in skills/blog-writer/SKILL.md.\n\n"
+        "Exit silently if nothing to propose.",
+    ))
+
+if "conversation-starters" in skills:
+    jobs.append(job(
+        "Conversation Starter",
+        cs_min + " " + cs_hour + " * * *",
+        "Use TZ=" + tz + " for all date operations.\n\n"
+        "Check whether to start a conversation. Follow skills/conversation-starters/SKILL.md step by step.",
+        announce=True,
+    ))
+
+data = {"version": 1, "jobs": jobs}
+with open("${CRON_DIR}/jobs.json", "w") as f:
     json.dump(data, f, indent=2)
-"
-echo -e "  ${GREEN}✓${NC} pending-crons.json"
+print("Written " + str(len(jobs)) + " job(s) to ${CRON_DIR}/jobs.json")
+PYEOF
+echo -e "  ${GREEN}✓${NC} ../cron/jobs.json"
 
 # ===========================================================================
 # Generate GETTING-STARTED.md
@@ -504,9 +558,7 @@ Setup is complete. This guide covers what to do next.
 
 ## First Conversation
 
-Start your agent and say hello. ${AGENT_NAME} will detect \`pending-crons.json\`
-on first startup and register the scheduled routines automatically. No manual
-cron setup needed.
+Start your agent and say hello. Cron jobs are already configured in \`../cron/jobs.json\` — OpenClaw picks them up automatically.
 
 GSEOF
 
@@ -534,60 +586,33 @@ Edit these before your first real conversation:
 GSEOF
 fi
 
-# API keys section (conditional)
-NEEDS_API_SECTION=false
-if [ -n "$IMAGE_SKILLS" ] || echo "$SKILLS_SELECTED" | grep -q "multi-provider"; then
-  NEEDS_API_SECTION=true
-fi
-
-if [ "$NEEDS_API_SECTION" = true ]; then
+# API keys section (image skills only)
+if [ -n "$IMAGE_SKILLS" ]; then
   cat >> "${WORKSPACE}/GETTING-STARTED.md" << 'GSEOF'
 ## API Keys
 
-Add these to `docker-compose.override.yml` on the host (NOT workspace `.env` — the agent can read `.env`):
-
-```yaml
-services:
-  nanobot-gateway:
-    environment:
-GSEOF
-
-  if echo "$IMAGE_SKILLS" | grep -q "venice-ai-media" || echo "$SKILLS_SELECTED" | grep -q "multi-provider"; then
-    echo "      - VENICE_API_KEY=your_key_here" >> "${WORKSPACE}/GETTING-STARTED.md"
-  fi
-  if echo "$IMAGE_SKILLS" | grep -q "openrouter-image-simple" || echo "$SKILLS_SELECTED" | grep -q "multi-provider"; then
-    echo "      - OPENROUTER_API_KEY=your_key_here" >> "${WORKSPACE}/GETTING-STARTED.md"
-  fi
-
-  cat >> "${WORKSPACE}/GETTING-STARTED.md" << 'GSEOF'
-```
-
-Restart with `docker compose up -d` after adding keys.
+Add image generation keys to your OpenClaw environment config:
 
 GSEOF
+  if echo "$IMAGE_SKILLS" | grep -q "venice-ai-media"; then
+    echo "- \`VENICE_API_KEY\` — required for Venice AI (image generation, editing, video)" >> "${WORKSPACE}/GETTING-STARTED.md"
+  fi
+  if echo "$IMAGE_SKILLS" | grep -q "openrouter-image-simple"; then
+    echo "- \`OPENROUTER_API_KEY\` — required for OpenRouter image generation" >> "${WORKSPACE}/GETTING-STARTED.md"
+  fi
+  echo "" >> "${WORKSPACE}/GETTING-STARTED.md"
 fi
 
-# Model configuration section (conditional)
-if echo "$SKILLS_SELECTED" | grep -q "multi-provider"; then
+# Dreaming model section
+if echo "$SKILLS_SELECTED" | grep -q "dreaming"; then
   cat >> "${WORKSPACE}/GETTING-STARTED.md" << GSEOF
-## Model Configuration
+## Dream Configuration
 
-${AGENT_NAME} can route different tasks to different AI models via the multi-provider skill.
+The dream model is set to \`${DREAM_MODEL}\` in \`../cron/jobs.json\`. OpenClaw runs the dreaming session natively as that model — no extra API configuration needed.
 
-Edit \`skills-data/multi-provider/providers.json\` to configure your providers (OpenRouter, Venice, Ollama, etc.).
+To change the dream model, edit the "Dreaming" job in \`../cron/jobs.json\` and update \`payload.model\`.
 
-GSEOF
-fi
-
-if echo "$SKILLS_SELECTED" | grep -q "dreaming" && [ "$DREAM_MODE" = "provider" ]; then
-  cat >> "${WORKSPACE}/GETTING-STARTED.md" << 'GSEOF'
-### Dream Models
-
-Edit `skills-data/dreaming/dream-config.json` to configure:
-
-- **models.heretic** — the creative model for dream generation. Recommended: Venice AI `heretic-r1` (uncensored, creative).
-- **models.default** — the model for post-dream reflection and scoring.
-- **models.opus** — optional high-quality model for specific dream topics.
+Edit \`skills-data/dreaming/dream-config.json\` to configure:
 - **topics** — add your own dream topics. Aim for 20+ within the first month for variety.
 - **styles** — image styles for dream images (film, anime, noir, abstract, impressionist).
 
@@ -644,10 +669,10 @@ if echo "$SKILLS_SELECTED" | grep -q "conversation-starters"; then
   echo "| ${CONVERSATION_STARTER_TIME} | Conversation starter — reach out with curiosity, recommendations, or callbacks (energy-gated) |" >> "${WORKSPACE}/GETTING-STARTED.md"
 fi
 
-echo "| 23:30 | Evening routine — summarize day, capture structured mood and energy, update entities, scan for learnings |" >> "${WORKSPACE}/GETTING-STARTED.md"
+echo "| 23:55 | Evening routine — summarize day, capture structured mood and energy, update entities, scan for learnings |" >> "${WORKSPACE}/GETTING-STARTED.md"
 
 if echo "$SKILLS_SELECTED" | grep -q "dreaming"; then
-  echo "| 02:30 | Dreaming — creative overnight processing (${DREAM_COUNT} dreams/night) |" >> "${WORKSPACE}/GETTING-STARTED.md"
+  echo "| 02:30 | Dreaming — creative overnight processing (${DREAM_COUNT} dreams/night, model: ${DREAM_MODEL}) |" >> "${WORKSPACE}/GETTING-STARTED.md"
 fi
 
 if echo "$SKILLS_SELECTED" | grep -q "offline-reflection"; then
@@ -682,7 +707,7 @@ GSEOF
 cat >> "${WORKSPACE}/GETTING-STARTED.md" << 'GSEOF'
 ## Troubleshooting
 
-- **Cron jobs not firing:** Check `nanobot cron list` inside the container. The gateway must be running.
+- **Cron jobs not firing:** Check the Jobs panel in OpenClaw. Verify `../cron/jobs.json` is present and valid JSON.
 - **Scripts fail silently:** The morning routine's heartbeat fallback catches missed routines. Check memory/ for today's file.
 - **Context window fills up:** AGENTS.md + SOUL.md + today's memory + preconscious should stay under ~4000 tokens.
 - **Personality flattens:** This is what the drift guard and continuity checks prevent. Don't skip weekly reflections.
