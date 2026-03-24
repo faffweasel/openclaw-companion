@@ -230,13 +230,13 @@ sed \
   -e "s|__USER_NAME__|${USER_NAME}|g" \
   "${TEMPLATES}/env.template" > "${WORKSPACE}/.env"
 
-sed -i "s|^IMAGE_GEN_CMD=.*|IMAGE_GEN_CMD=\"${IMAGE_GEN_CMD}\"|" "${WORKSPACE}/.env"
-sed -i "s|^IMAGE_EDIT_CMD=.*|IMAGE_EDIT_CMD=\"${IMAGE_EDIT_CMD}\"|" "${WORKSPACE}/.env"
-sed -i "s|^BLOG_CHECK_DAYS=.*|BLOG_CHECK_DAYS=${BLOG_CHECK_DAYS}|" "${WORKSPACE}/.env"
+sed -i '' "s|^IMAGE_GEN_CMD=.*|IMAGE_GEN_CMD=\"${IMAGE_GEN_CMD}\"|" "${WORKSPACE}/.env"
+sed -i '' "s|^IMAGE_EDIT_CMD=.*|IMAGE_EDIT_CMD=\"${IMAGE_EDIT_CMD}\"|" "${WORKSPACE}/.env"
+sed -i '' "s|^BLOG_CHECK_DAYS=.*|BLOG_CHECK_DAYS=${BLOG_CHECK_DAYS}|" "${WORKSPACE}/.env"
 
 if echo "$SKILLS_SELECTED" | grep -q "selfie"; then
-  sed -i "s|^COMPANION_REFERENCE_PORTRAIT=.*|COMPANION_REFERENCE_PORTRAIT=\"${WORKSPACE}/identity/reference-portrait.webp\"|" "${WORKSPACE}/.env"
-  sed -i "s|^COMPANION_REFERENCE_BODY=.*|COMPANION_REFERENCE_BODY=\"${WORKSPACE}/identity/reference-body.webp\"|" "${WORKSPACE}/.env"
+  sed -i '' "s|^COMPANION_REFERENCE_PORTRAIT=.*|COMPANION_REFERENCE_PORTRAIT=\"${WORKSPACE}/identity/reference-portrait.webp\"|" "${WORKSPACE}/.env"
+  sed -i '' "s|^COMPANION_REFERENCE_BODY=.*|COMPANION_REFERENCE_BODY=\"${WORKSPACE}/identity/reference-body.webp\"|" "${WORKSPACE}/.env"
 fi
 echo -e "  ${GREEN}✓${NC} .env"
 
