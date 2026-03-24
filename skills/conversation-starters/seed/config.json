@@ -1,0 +1,11 @@
+{
+  "weights": {
+    "CURIOSITY": 25,
+    "SELF_TEACHING": 15,
+    "MEMORY_CALLBACK": 15,
+    "RECOMMENDATION": 15,
+    "CREATIVE_PROVOCATION": 15
+  },
+  "min_quiet_minutes": 30,
+  "last_triggered": null
+}

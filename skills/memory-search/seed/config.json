@@ -1,0 +1,26 @@
+{
+  "index_paths": [
+    "memory/",
+    ".learnings/"
+  ],
+  "max_chunk_chars": 1600,
+  "search_top_k": 10,
+  "embedding": {
+    "provider": "auto",
+    "providers": {
+      "openrouter": {
+        "endpoint": "https://openrouter.ai/api/v1/embeddings",
+        "model": "openai/text-embedding-3-small",
+        "apiKeyEnvVar": "OPENROUTER_API_KEY",
+        "format": "openai"
+      },
+      "ollama": {
+        "endpoint": "http://localhost:11434/api/embed",
+        "model": "nomic-embed-text",
+        "apiKeyEnvVar": "",
+        "format": "ollama",
+        "_comment": "No API key needed. Requires Ollama running locally with nomic-embed-text pulled."
+      }
+    }
+  }
+}

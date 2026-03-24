@@ -1,0 +1,5 @@
+{
+  "days_to_review": 3,
+  "min_memory_files": 3,
+  "min_lines_per_file": 5
+}
