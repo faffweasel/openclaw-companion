@@ -82,48 +82,12 @@ MODE_KEYWORDS = {
 # ============================================================================
 
 MOOD_CONFIG = {
-    "contemplative": {
-        "description": "Soft light, half-closed eyes, looking away or down",
-        "lighting": "soft diffused light from the side",
-        "expression": "contemplative, eyes half-closed or looking away",
-        "composition": "slightly off-center, breathing room",
-        "signatureElement": False,
-    },
-    "playful": {
-        "description": "Slight smile, bright light, movement implied",
-        "lighting": "bright, warm, energetic",
-        "expression": "playful slight smile, spark in eyes",
-        "composition": "dynamic angle, sense of movement",
-        "signatureElement": True,
-    },
-    "teasing": {
-        "description": "Direct gaze, slight raised eyebrow, confident",
-        "lighting": "dramatic, highlighting the eyes",
-        "expression": "confident, slight raised eyebrow, direct gaze",
-        "composition": "close framing, engaging",
-        "signatureElement": True,
-    },
-    "intimate": {
-        "description": "Warm light, soft focus, direct and close",
-        "lighting": "warm golden light, soft bokeh",
-        "expression": "open, present, direct eye contact",
-        "composition": "close and personal, shallow depth of field",
-        "signatureElement": True,
-    },
-    "vulnerable": {
-        "description": "Open, unguarded, raw",
-        "lighting": "soft natural light, minimal shadows",
-        "expression": "open, unguarded, no performance",
-        "composition": "honest framing, no artifice",
-        "signatureElement": False,
-    },
-    "quiet": {
-        "description": "Still, minimal expression, present but not performing",
-        "lighting": "gentle, subdued",
-        "expression": "minimal, still, simply present",
-        "composition": "calm, uncluttered, meditative",
-        "signatureElement": False,
-    },
+    "contemplative": {"expression_hint": "pensive expression"},
+    "playful": {"expression_hint": "happy, slight smile"},
+    "teasing": {"expression_hint": "confident smirk"},
+    "intimate": {"expression_hint": "soft gaze"},
+    "vulnerable": {"expression_hint": "unguarded expression"},
+    "quiet": {"expression_hint": "calm expression"},
 }
 
 MOOD_KEYWORDS = {
@@ -339,76 +303,61 @@ def build_prompt(
     clothing_override: str | None,
     style_override: str | None,
 ) -> str:
-    """Build the complete edit prompt."""
+    """
+    Build a natural-language edit prompt. Five parts max:
+    1. Face anchor (specific physical descriptors)
+    2. Clothing
+    3. Scene (user prompt + expression hint)
+    4. Only one person guard
+    5. Signature element (conditional)
+
+    No structured key:value labels — reads like a scene description.
+    """
     appearance = config.get("appearance", {})
     mood_config = MOOD_CONFIG.get(mood, MOOD_CONFIG["contemplative"])
 
-    # Clothing
+    # 1. Face anchor — FIRST, most important
+    face_anchor = appearance.get(
+        "faceAnchor",
+        "Same person, keep exact face, same round glasses, same short dark hair",
+    )
+
+    # 2. Clothing
     if clothing_override:
         clothing = clothing_override
     else:
         extracted = extract_clothing_from_prompt(user_prompt)
-        clothing = extracted if extracted else infer_clothing(config, setting, mood, user_prompt)
-    clothing, modifiers = parse_clothing_modifiers(clothing)
-    modifier_str = ", ".join(modifiers) if modifiers else ""
+        clothing = extracted or infer_clothing(config, setting, mood, user_prompt)
 
-    # Setting
-    setting_context = build_setting_context(config, setting, user_prompt)
-
-    # Signature element (fireflies/beetles or user's custom element)
-    sig = config.get("signatureElement", {})
-    sig_context = ""
-    if sig.get("enabled", False):
-        sig_moods = sig.get("moods", [])
-        if mood in sig_moods:
-            sig_context = sig.get("description", "")
-
-    # Photo style (config or default)
-    photo_style = style_override or config.get(
-        "photoStyle",
-        "photorealistic, documentary photography style, natural light, high quality photograph",
-    )
-
-    # Mode framing
-    mode_framing = {
-        "portrait": "portrait shot, face and shoulders, close framing",
-        "scene": "wide environmental shot, full scene context, natural relaxed pose",
-        "candid": "candid moment, not posed, natural capture",
-        "intimate": "intimate close-up, shallow depth of field, soft focus",
-    }
-    framing = mode_framing.get(mode, mode_framing["portrait"])
-
-    # Appearance anchors from config
-    face_anchor = appearance.get("faceAnchor", "same person: keep exact face")
-    body_anchor = appearance.get("bodyAnchor", "")
-
-    # Include body anchor for body-visible modes
-    body_section = body_anchor if mode in ("scene", "candid", "intimate") and body_anchor else ""
-
-    # Sanitize viewer-presence language
+    # 3. Scene — user prompt (sanitized) + expression hint
     clean_prompt = sanitize_prompt(user_prompt)
+    expression_hint = mood_config.get("expression_hint", "")
+    if expression_hint:
+        scene = f"{clean_prompt}, {expression_hint}"
+    else:
+        scene = clean_prompt
 
-    # Assemble
-    parts = [
-        photo_style + ",",
-        framing + ",",
-        "subject is the sole focal point, no photographer visible, no second person,",
-        face_anchor + ",",
-    ]
-    if body_section:
-        parts.append(body_section + ",")
-    parts.extend([
-        f"{clothing}" + (f", {modifier_str}" if modifier_str else "") + ",",
-        f"setting: {setting_context},",
-        f"mood: {mood_config['description']},",
-        f"lighting: {mood_config['lighting']},",
-        f"expression: {mood_config['expression']},",
-        clean_prompt,
-    ])
-    if sig_context:
-        parts.append(f", {sig_context}")
+    # 4. Only one person
+    guard = "Only one person"
 
-    return " ".join(parts)
+    # 5. Signature element (conditional on mood)
+    sig = config.get("signatureElement", {})
+    sig_text = ""
+    if sig.get("enabled") and mood in sig.get("moods", []):
+        sig_text = sig.get("description", "")
+
+    # Assemble as natural language
+    parts = [face_anchor, clothing, scene, guard]
+
+    # Photo style — optional, from config or --style override
+    photo_style = style_override or config.get("photoStyle", "")
+    if photo_style:
+        parts.append(photo_style)
+
+    if sig_text:
+        parts.append(sig_text)
+
+    return ". ".join(parts)
 
 
 # ============================================================================
@@ -483,7 +432,7 @@ def generate_selfie(
     # Build prompt
     edit_prompt = build_prompt(config, user_prompt, mode, mood, setting, clothing, style)
 
-    # Resolve output path
+    # Resolve output path (extension is a hint — venice-edit may correct it)
     if output:
         out_path = output
     else:
@@ -491,7 +440,7 @@ def generate_selfie(
         os.makedirs(dir_path, exist_ok=True)
         date_str = datetime.now().strftime("%Y-%m-%d")
         desc = slugify(user_prompt)
-        out_path = os.path.join(dir_path, f"{date_str}-{mood}-{desc}.webp")
+        out_path = os.path.join(dir_path, f"{date_str}-{mood}-{desc}.png")
 
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
 
@@ -512,17 +461,19 @@ def generate_selfie(
         print(f"Error: IMAGE_EDIT_CMD failed:\n{result.stderr}", file=sys.stderr)
         return None
 
-    # Pass through MEDIA: line
+    # Parse actual output path from MEDIA: line (extension may have been corrected)
+    actual_path = out_path
     for line in result.stdout.splitlines():
         if line.startswith("MEDIA:"):
+            actual_path = line.split("MEDIA:", 1)[1].strip()
             print(line)
 
-    print(f"Saved: {out_path}")
+    print(f"Saved: {actual_path}")
 
     # Track preferences
     update_preferences(mood, setting)
 
-    return out_path
+    return actual_path
 
 
 # ============================================================================

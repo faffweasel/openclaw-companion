@@ -30,6 +30,7 @@ These catch cron failures and ensure continuity survives missed jobs.
 ### Anytime
 
 - Check if anything genuinely needs attention
+- If today's memory file has no entries since the last `### Checkpoint` (or no checkpoint at all) AND there have been conversations today: write a checkpoint now. 3-5 bullet points.
 - If nothing needs attention: **stay completely silent** — no message, no emoji, nothing
 
 ---

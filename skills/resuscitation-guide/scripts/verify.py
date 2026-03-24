@@ -58,27 +58,13 @@ print()
 
 # --- MEMORY.md ---
 memory_md_root = os.path.join(WORKSPACE, "MEMORY.md")
-memory_md_old = os.path.join(WORKSPACE, "memory", "MEMORY.md")
-root_exists = os.path.isfile(memory_md_root)
-old_exists = os.path.isfile(memory_md_old)
-
-if root_exists and old_exists:
-    print("MEMORY.md: ⚠ Found at BOTH locations — duplicate!")
-    print("  Root (correct): MEMORY.md")
-    print("  Old location:   memory/MEMORY.md")
-    print("  Fix: rm memory/MEMORY.md (keep the root copy)")
-    warnings += 1
-elif root_exists:
+if os.path.isfile(memory_md_root):
     with open(memory_md_root) as f:
         line_count = len(f.readlines())
     status = "✓" if line_count <= 50 else "⚠"
     if line_count > 50:
         warnings += 1
-    print(f"MEMORY.md: {status} {line_count} lines at workspace root (target: ≤50)")
-elif old_exists:
-    print("MEMORY.md: ⚠ Found at memory/MEMORY.md (old location) — should be at workspace root")
-    print("  Fix: mv memory/MEMORY.md MEMORY.md")
-    warnings += 1
+    print(f"MEMORY.md: {status} {line_count} lines (target: ≤50)")
 else:
     print("MEMORY.md: ✗ MISSING")
     errors += 1
@@ -167,7 +153,8 @@ print()
 # --- Skills-data cross-validation ---
 print("Skills-data:")
 if os.path.isdir(DATA_DIR):
-    data_skills = sorted(os.listdir(DATA_DIR))
+    data_skills = sorted(e for e in os.listdir(DATA_DIR)
+                         if os.path.isdir(os.path.join(DATA_DIR, e)))
     print(f"  {len(data_skills)} skill(s) with runtime data")
     for d in data_skills:
         files = os.listdir(os.path.join(DATA_DIR, d))

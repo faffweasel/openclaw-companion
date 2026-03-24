@@ -186,6 +186,21 @@ def get_mime_type(filename: str) -> str:
     }.get(suffix, "application/octet-stream")
 
 
+def detect_image_ext(data: bytes) -> str:
+    """Detect image format from magic bytes. Returns extension including dot."""
+    if data[:3] == b"\xff\xd8\xff":
+        return ".jpg"
+    if data[:8] == b"\x89PNG\r\n\x1a\n":
+        return ".png"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return ".webp"
+    if data[:4] in (b"GIF8",):
+        return ".gif"
+    if data[:2] in (b"BM",):
+        return ".bmp"
+    return ".png"  # safe fallback
+
+
 def default_out_dir(prefix: str = "venice") -> Path:
     """Create timestamped output directory."""
     now = dt.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")

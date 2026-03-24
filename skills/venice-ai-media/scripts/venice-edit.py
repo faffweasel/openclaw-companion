@@ -19,6 +19,7 @@ from venice_common import (
     validate_model,
     print_media_line,
     get_mime_type,
+    detect_image_ext,
     USER_AGENT,
     API_BASE,
 )
@@ -260,6 +261,11 @@ def main() -> int:
             print(f"Error: {e}", file=sys.stderr)
             return 1
     
+    # Detect actual format from response bytes and fix extension
+    actual_ext = detect_image_ext(result)
+    if out_path.suffix.lower() != actual_ext:
+        out_path = out_path.with_suffix(actual_ext)
+
     out_path.write_bytes(result)
     print(f"\nSaved: {out_path.as_posix()}")
     print(f"Size: {len(result) / 1024:.1f}KB")

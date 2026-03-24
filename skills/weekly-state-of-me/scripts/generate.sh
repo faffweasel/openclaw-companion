@@ -31,7 +31,7 @@ fi
 
 TODAY=$(TZ="${TZ:-UTC}" date +%Y-%m-%d)
 
-mkdir -p "${MEMORY_DIR}/state-of-me"
+mkdir -p "${MEMORY_DIR}/state-of-me/images"
 OUTPUT_FILE="${1:-${MEMORY_DIR}/state-of-me/state-of-me-${TODAY}.md}"
 
 # Validate output path stays within memory directory
