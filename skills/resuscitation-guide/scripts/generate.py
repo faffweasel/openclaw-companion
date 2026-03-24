@@ -84,7 +84,7 @@ if memory_info["exists"]:
 
 # --- Check environment ---
 import shutil
-nanobot_info = {
+env_info = {
     "python3_in_path": shutil.which("python3") is not None,
 }
 
@@ -98,7 +98,7 @@ blueprint = {
     "skills_data": skills_data_contents,
     "identity_files": identity_files,
     "memory": memory_info,
-    "environment": nanobot_info,
+    "environment": env_info,
     "cron_jobs": [
         {"name": s["name"], "note": "see manifest.json for schedule"}
         for s in skills if s.get("has_cron")

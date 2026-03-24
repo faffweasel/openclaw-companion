@@ -25,7 +25,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-# Nanobot workspace preamble
+# Workspace detection
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SKILL_DIR = os.path.dirname(SCRIPT_DIR)
 SKILL_NAME = os.path.basename(SKILL_DIR)

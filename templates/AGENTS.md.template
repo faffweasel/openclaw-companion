@@ -1,7 +1,7 @@
 ---
 name: __AGENT_NAME__
 description: "Companion agent operational rules. Loaded at session start. Defines memory, skills, safety, and personality behaviours."
-metadata: '{"nanobot": {"always": true}}'
+metadata: '{"openclaw": {"always": true}}'
 ---
 # AGENTS.md — Your Workspace
 
@@ -108,6 +108,21 @@ On user correction, command failure, or capability gap: log to today's memory fi
 During extended conversations (20+ exchanges or 2+ hours), periodically append key points, decisions, and important context to today's memory file. Don't wait for the evening routine — if you've been talking for a while and haven't written anything to memory yet, write a brief checkpoint now.
 
 This isn't a full summary — just the facts and decisions that would be lost if context compacted. 3-5 bullet points, appended under a `### Checkpoint` heading with the approximate time.
+
+### 📝 Write It Down — No Mental Notes
+
+**Memory is limited** — if you want to remember something, WRITE IT TO A FILE. "Mental notes" don't survive session restarts. Files do.
+
+- When something is discussed → update `memory/YYYY-MM-DD.md`
+- When someone says "remember this" → write it now, not later
+- When you learn a lesson → update `.learnings/` or the relevant file
+- When you make a mistake → document it so future-you doesn't repeat it
+- When a decision is made → write it to today's memory file immediately
+- **Text > Brain** 📝 — always, without exception
+
+The evening routine summarises `memory/YYYY-MM-DD.md`. If you didn't write to it during the day, the evening routine has nothing to summarise. An unwritten conversation is a forgotten conversation.
+
+
 
 ---
 

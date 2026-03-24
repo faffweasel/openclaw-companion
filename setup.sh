@@ -152,7 +152,7 @@ echo ""
 ask_skill "preference-accumulation" "Should I track my own developing preferences and detect tensions between them?" "Y"
 ask_skill "dreaming" "Should I dream at night?" "Y"
 
-DREAM_MODEL="heretic" ; DREAM_COUNT=2 ; DREAM_IMAGES=false ; DREAM_IMAGE_THRESHOLD=4
+DREAM_MODEL="heretic" ; DREAM_COUNT=2 ; DREAM_IMAGES=False ; DREAM_IMAGE_THRESHOLD=4
 if echo "$SKILLS_SELECTED" | grep -q "dreaming"; then
   echo ""
   echo -e "${DIM}  In OpenClaw, the dream model is set in the cron job — the agent runs natively as that model.${NC}"
@@ -167,7 +167,7 @@ if echo "$SKILLS_SELECTED" | grep -q "dreaming"; then
   if [ -n "$IMAGE_GEN_CMD" ] || [ -n "$IMAGE_EDIT_CMD" ]; then
     read -rp "    Should I generate images of my dreams? [y/N]: " DREAM_IMG_ANSWER
     if [[ "$DREAM_IMG_ANSWER" =~ ^[Yy]$ ]]; then
-      DREAM_IMAGES=true
+      DREAM_IMAGES=True
       read -rp "    Minimum dream intensity for images (1-7, lower = more images) [4]: " DREAM_IMAGE_THRESHOLD
       DREAM_IMAGE_THRESHOLD="${DREAM_IMAGE_THRESHOLD:-4}"
       if ! [[ "$DREAM_IMAGE_THRESHOLD" =~ ^[1-7]$ ]]; then
