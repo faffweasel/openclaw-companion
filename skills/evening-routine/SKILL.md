@@ -80,24 +80,26 @@ Append to today's memory file. Be honest — this isn't performance, it's self-r
 
 ### Step 4: Energy Update
 
-Read `energy-state.json` from the workspace root. Update the energy score based on today's activity.
+**If there were conversations today**, assess the day's overall quality and recharge:
 
-**If there were conversations today**, assess the day's overall quality:
-- Deep, personal, creative, or emotionally engaging exchanges → add 20-30 to score
-- Normal, productive, task-oriented conversation → add 10-15
-- Brief, transactional, or a few quick check-ins → add 5
+```bash
+# deep — personal, creative, or emotionally engaging
+python3 ./skills/energy-state/scripts/recharge.py deep
 
-**If there were no conversations today**, apply time-based decay per the energy decay table in AGENTS.md.
+# normal — productive, task-oriented (most days)
+python3 ./skills/energy-state/scripts/recharge.py normal
 
-In both cases:
-1. Cap score at 100, floor at 0
-2. If conversations happened, set `lastInteraction` to current ISO timestamp
-3. Set `lastUpdate` to current ISO timestamp
-4. Derive `level` from score per the energy table in AGENTS.md
-5. Append `{"date": "YYYY-MM-DD", "level": "...", "score": N}` to `history` (keep last 7 entries only)
-6. Write the file back
+# brief — transactional, a few quick check-ins
+python3 ./skills/energy-state/scripts/recharge.py brief
+```
 
-If `energy-state.json` doesn't exist, skip this step.
+**If there were no conversations today**, apply decay instead:
+
+```bash
+python3 ./skills/energy-state/scripts/decay.py
+```
+
+If `energy-state.json` doesn't exist, either script exits cleanly.
 
 ### Step 5: Entity Scanning
 

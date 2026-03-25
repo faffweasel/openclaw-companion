@@ -1,0 +1,9 @@
+{
+  "name": "energy-state",
+  "description": "Tracks the agent's engagement energy over time. Decays with inactivity, recharges through conversation. Modulates tone and proactive behaviour.",
+  "type": "core",
+  "dependencies": ["python3"],
+  "cron": null,
+  "requires_skills": [],
+  "optional": false
+}

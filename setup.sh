@@ -346,12 +346,7 @@ fi
 
 # --- Energy state ---
 if [ ! -f "${WORKSPACE}/energy-state.json" ]; then
-  if [ -f "${TEMPLATES}/energy-state.json.template" ]; then
-    cp "${TEMPLATES}/energy-state.json.template" "${WORKSPACE}/energy-state.json"
-  else
-    echo '{"level":"neutral","score":50,"lastInteraction":null,"lastUpdate":null,"history":[]}' \
-      | python3 -m json.tool > "${WORKSPACE}/energy-state.json"
-  fi
+  cp "${SKILLS_SRC}/energy-state/seed/state.json" "${WORKSPACE}/energy-state.json"
   echo -e "  ${GREEN}✓${NC} energy-state.json"
 fi
 

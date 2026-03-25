@@ -237,7 +237,6 @@ openclaw-companion/                        ← Cloned as ~/.openclaw/workspace/
 │   ├── TOOLS.md.template
 │   ├── env.template
 │   ├── jobs.json                      # OpenClaw cron job reference template
-│   ├── energy-state.json.template     # Energy/engagement state seed
 │   ├── location.json.template
 │   ├── MEMORY.md.template
 │   ├── key-memories.md.template

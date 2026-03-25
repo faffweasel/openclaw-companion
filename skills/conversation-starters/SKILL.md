@@ -15,6 +15,8 @@ Start a conversation when things are quiet. One trigger per day, weighted random
 
 ## Procedure
 
+**Critical:** Do not send anything via Telegram until Step 5. Steps 1–4 are internal. Narrating your decision process, logging which mode was selected, or explaining what you're about to do are all internal — none of that reaches the user. The only Telegram call in this skill is the final composed message.
+
 ### Step 1: Energy Gate
 
 Read `energy-state.json` from the workspace root.
@@ -52,9 +54,11 @@ Read **only** the matching file from `skills/conversation-starters/references/`:
 
 Follow the instructions in the file you just read. Each mode has its own procedure, tone, and skip conditions.
 
+**If the mode's skip conditions trigger** (e.g. no suitable memory thread found, nothing to riff on): fall back to CURIOSITY rather than exiting with no message. Read `references/curiosity.md` and follow that procedure instead. Do not silently abort after having already started — produce something.
+
 ### Step 5: Send
 
-Send the result via Telegram. Keep it natural — this should feel like the agent reaching out, not a notification.
+Send **only the composed conversation content** via Telegram. This is the only Telegram call in this skill. Keep it natural — this should feel like the agent reaching out, not a notification.
 
 ---
 

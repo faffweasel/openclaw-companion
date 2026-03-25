@@ -27,13 +27,11 @@ Daily startup. Process overnight carry-overs, decay the preconscious buffer, upd
 
 ### Step 2: Energy Decay
 
-Read `energy-state.json` from the workspace root. Calculate hours since `lastInteraction` and apply time-based decay per the energy decay table in AGENTS.md.
+```bash
+python3 ./skills/energy-state/scripts/decay.py
+```
 
-Floor at 0. Derive `level` from score per the energy table in AGENTS.md. Set `lastUpdate` to now. Write the file back.
-
-Note: the evening routine may have already run decay for a no-conversation day. Morning decay accounts for the overnight hours between evening and now. Both are needed.
-
-If `energy-state.json` doesn't exist, skip this step.
+Accounts for overnight hours between the evening routine and now. If `energy-state.json` doesn't exist, the script exits cleanly.
 
 ### Step 3: Check Pending Learnings
 
