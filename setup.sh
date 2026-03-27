@@ -19,6 +19,15 @@ YELLOW='\033[0;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
+# --- Portable in-place sed (macOS vs GNU) ---
+sedi() {
+  if sed --version 2>/dev/null | grep -q GNU; then
+    sed -i "$@"
+  else
+    sed -i '' "$@"
+  fi
+}
+
 echo -e "${BOLD}openclaw-companion setup${NC}"
 echo "========================"
 echo ""
@@ -118,9 +127,9 @@ ask_skill() {
   read -rp "  ${question} (${name}) [${prompt_default}]: " answer
   answer="${answer:-$default}"
   if [[ "$answer" =~ ^[Yy]$ ]]; then
-    SKILLS_SELECTED="${SKILLS_SELECTED} ${name}" ; return 0
+    SKILLS_SELECTED="${SKILLS_SELECTED} ${name}"
   fi
-  return 1
+  return 0
 }
 
 echo -e "${BOLD}Image Generation${NC}"
@@ -152,12 +161,12 @@ echo ""
 ask_skill "preference-accumulation" "Should I track my own developing preferences and detect tensions between them?" "Y"
 ask_skill "dreaming" "Should I dream at night?" "Y"
 
-DREAM_MODEL="heretic" ; DREAM_COUNT=2 ; DREAM_IMAGES=False ; DREAM_IMAGE_THRESHOLD=4
+DREAM_MODEL="" ; DREAM_COUNT=2 ; DREAM_IMAGES=False ; DREAM_IMAGE_THRESHOLD=4
 if echo "$SKILLS_SELECTED" | grep -q "dreaming"; then
   echo ""
-  echo -e "${DIM}  In OpenClaw, the dream model is set in the cron job — the agent runs natively as that model.${NC}"
-  read -rp "    Dream model name (from your model routing config) [heretic]: " DREAM_MODEL
-  DREAM_MODEL="${DREAM_MODEL:-heretic}"
+  echo -e "${DIM}  The dream cron job can run as a specific model, or use your agent's default model.${NC}"
+  echo -e "${DIM}  Press Enter to use the agent's default. Or enter a model name (e.g. heretic).${NC}"
+  read -rp "    Dream model [agent default]: " DREAM_MODEL
   read -rp "    How many dreams per night? [2]: " DREAM_COUNT
   DREAM_COUNT="${DREAM_COUNT:-2}"
   if ! [[ "$DREAM_COUNT" =~ ^[0-9]+$ ]] || [ "$DREAM_COUNT" -lt 1 ] || [ "$DREAM_COUNT" -gt 10 ]; then
@@ -230,13 +239,13 @@ sed \
   -e "s|__USER_NAME__|${USER_NAME}|g" \
   "${TEMPLATES}/env.template" > "${WORKSPACE}/.env"
 
-sed -i '' "s|^IMAGE_GEN_CMD=.*|IMAGE_GEN_CMD=\"${IMAGE_GEN_CMD}\"|" "${WORKSPACE}/.env"
-sed -i '' "s|^IMAGE_EDIT_CMD=.*|IMAGE_EDIT_CMD=\"${IMAGE_EDIT_CMD}\"|" "${WORKSPACE}/.env"
-sed -i '' "s|^BLOG_CHECK_DAYS=.*|BLOG_CHECK_DAYS=${BLOG_CHECK_DAYS}|" "${WORKSPACE}/.env"
+sedi "s|^IMAGE_GEN_CMD=.*|IMAGE_GEN_CMD=\"${IMAGE_GEN_CMD}\"|" "${WORKSPACE}/.env"
+sedi "s|^IMAGE_EDIT_CMD=.*|IMAGE_EDIT_CMD=\"${IMAGE_EDIT_CMD}\"|" "${WORKSPACE}/.env"
+sedi "s|^BLOG_CHECK_DAYS=.*|BLOG_CHECK_DAYS=${BLOG_CHECK_DAYS}|" "${WORKSPACE}/.env"
 
 if echo "$SKILLS_SELECTED" | grep -q "selfie"; then
-  sed -i '' "s|^COMPANION_REFERENCE_PORTRAIT=.*|COMPANION_REFERENCE_PORTRAIT=\"${WORKSPACE}/identity/reference-portrait.webp\"|" "${WORKSPACE}/.env"
-  sed -i '' "s|^COMPANION_REFERENCE_BODY=.*|COMPANION_REFERENCE_BODY=\"${WORKSPACE}/identity/reference-body.webp\"|" "${WORKSPACE}/.env"
+  sedi "s|^COMPANION_REFERENCE_PORTRAIT=.*|COMPANION_REFERENCE_PORTRAIT=\"${WORKSPACE}/identity/reference-portrait.webp\"|" "${WORKSPACE}/.env"
+  sedi "s|^COMPANION_REFERENCE_BODY=.*|COMPANION_REFERENCE_BODY=\"${WORKSPACE}/identity/reference-body.webp\"|" "${WORKSPACE}/.env"
 fi
 echo -e "  ${GREEN}✓${NC} .env"
 
@@ -417,7 +426,8 @@ cfg['dreamImageThreshold'] = ${DREAM_IMAGE_THRESHOLD}
 with open('${DREAM_CONFIG}', 'w') as f:
     json.dump(cfg, f, indent=2)
 "
-    echo -e "  ${GREEN}✓${NC} dream-config.json (model: ${DREAM_MODEL}, ${DREAM_COUNT}/night)"
+    DREAM_MODEL_DISPLAY="${DREAM_MODEL:-agent default}"
+    echo -e "  ${GREEN}✓${NC} dream-config.json (model: ${DREAM_MODEL_DISPLAY}, ${DREAM_COUNT}/night)"
   fi
 fi
 
@@ -492,7 +502,7 @@ if "dreaming" in skills:
         "Run the dreaming routine. Follow skills/dreaming/SKILL.md step by step. "
         "Generate " + str(dream_count) + " dreams.\n\n"
         "Exit silently with NO_REPLY after all dreams are written.",
-        model=dream_model,
+        model=dream_model or None,
     ))
 
 if "offline-reflection" in skills:
@@ -600,12 +610,19 @@ fi
 
 # Dreaming model section
 if echo "$SKILLS_SELECTED" | grep -q "dreaming"; then
+  if [ -n "$DREAM_MODEL" ]; then
+    DREAM_MODEL_NOTE="The dream model is set to \`${DREAM_MODEL}\` in \`../cron/jobs.json\`. OpenClaw runs the dreaming session natively as that model."
+    DREAM_MODEL_CHANGE="To change the dream model, edit the \"Dreaming\" job in \`../cron/jobs.json\` and update \`payload.model\`. To use the agent's default model instead, remove the \`model\` key from the job payload."
+  else
+    DREAM_MODEL_NOTE="Dreaming uses your agent's default model (no explicit model set in the cron job)."
+    DREAM_MODEL_CHANGE="To use a different model for dreaming, edit the \"Dreaming\" job in \`../cron/jobs.json\` and add \`\"model\": \"model-name\"\` to the \`payload\` object."
+  fi
   cat >> "${WORKSPACE}/GETTING-STARTED.md" << GSEOF
 ## Dream Configuration
 
-The dream model is set to \`${DREAM_MODEL}\` in \`../cron/jobs.json\`. OpenClaw runs the dreaming session natively as that model — no extra API configuration needed.
+${DREAM_MODEL_NOTE}
 
-To change the dream model, edit the "Dreaming" job in \`../cron/jobs.json\` and update \`payload.model\`.
+${DREAM_MODEL_CHANGE}
 
 Edit \`skills-data/dreaming/dream-config.json\` to configure:
 - **topics** — add your own dream topics. Aim for 20+ within the first month for variety.
@@ -667,7 +684,7 @@ fi
 echo "| 23:55 | Evening routine — summarize day, capture structured mood and energy, update entities, scan for learnings |" >> "${WORKSPACE}/GETTING-STARTED.md"
 
 if echo "$SKILLS_SELECTED" | grep -q "dreaming"; then
-  echo "| 02:30 | Dreaming — creative overnight processing (${DREAM_COUNT} dreams/night, model: ${DREAM_MODEL}) |" >> "${WORKSPACE}/GETTING-STARTED.md"
+  echo "| 02:30 | Dreaming — creative overnight processing (${DREAM_COUNT} dreams/night, model: ${DREAM_MODEL:-agent default}) |" >> "${WORKSPACE}/GETTING-STARTED.md"
 fi
 
 if echo "$SKILLS_SELECTED" | grep -q "offline-reflection"; then

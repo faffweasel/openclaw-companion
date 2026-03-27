@@ -370,6 +370,25 @@ This was not developed in a vacuum, I've pulled various ideas from different sou
 
 ---
 
-## License
+## Licence
+All code in this repository is licensed under the AGPL-3.0 
+**unless a directory contains a LICENSE or LICENSE.md file**, 
+in which case that file applies to the code in that sub-directory.
 
-[TBD]
+* * *
+
+### Logo License
+
+The Faffweasel logos are copyright (c) Phill Richardson, all rights reserved,
+and may not be used without a permission. If you would like to use the logos or
+icons please contact the author in order to get a permission.
+
+* * *
+
+Copyright (C) 2026 Phill Richardson
+
+https://www.gnu.org/licenses/agpl-3.0.txt
+
+## Contact
+
+https://faffweasel.com
