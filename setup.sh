@@ -112,9 +112,21 @@ else
   CITY="" ; COUNTRY="" ; LAT="0" ; LNG="0"
 fi
 
+# --- Message delivery ---
+echo ""
+echo -e "${BOLD}3. Message Delivery${NC}"
+echo -e "${DIM}Cron jobs that send messages (morning greeting, conversation starters) need${NC}"
+echo -e "${DIM}an explicit delivery target. For Telegram, this is the numeric chat ID.${NC}"
+echo -e "${DIM}(Send /start to your bot and check the chat object, or use @userinfobot.)${NC}"
+echo ""
+read -rp "Telegram chat ID (leave empty to configure later): " TELEGRAM_CHAT_ID
+if [ -z "$TELEGRAM_CHAT_ID" ]; then
+  echo -e "  ${YELLOW}⚠ No chat ID — announce jobs will use 'channel: last' (only works in persistent sessions)${NC}"
+fi
+
 # --- Skills ---
 echo ""
-echo -e "${BOLD}3. Companion Skills${NC}"
+echo -e "${BOLD}4. Companion Skills${NC}"
 echo -e "${DIM}Core skills (preconscious, carry-over, morning/evening routines, zero-trust) are always active.${NC}"
 echo ""
 
@@ -214,7 +226,7 @@ fi
 
 # --- Identity files ---
 echo ""
-echo -e "${BOLD}4. Identity Files${NC}"
+echo -e "${BOLD}5. Identity Files${NC}"
 echo ""
 echo "${AGENT_NAME} needs SOUL.md, IDENTITY.md, and USER.md to define who they are."
 echo "  1) Run the bootstrap interview (recommended — ${AGENT_NAME} interviews you and generates)"
@@ -457,8 +469,9 @@ skills = "${SKILLS_SELECTED}"
 cs_hour = "${CS_HOUR}"
 cs_min = "${CS_MIN}"
 blog_check_days = ${BLOG_CHECK_DAYS}
+chat_id = "${TELEGRAM_CHAT_ID}"
 
-def job(name, expr, message, model=None, announce=False):
+def job(name, expr, message, model=None, announce=False, session_target="isolated"):
     j = {
         "id": str(uuid.uuid4()),
         "name": name,
@@ -466,11 +479,16 @@ def job(name, expr, message, model=None, announce=False):
         "createdAtMs": now_ms,
         "updatedAtMs": now_ms,
         "schedule": {"kind": "cron", "expr": expr, "tz": tz},
-        "sessionTarget": "isolated",
+        "sessionTarget": session_target,
         "wakeMode": "now",
         "payload": {"kind": "agentTurn", "message": message},
-        "delivery": {"mode": "announce", "channel": "last"} if announce else {"mode": "none"},
     }
+    if announce and chat_id:
+        j["delivery"] = {"mode": "announce", "channel": "telegram", "to": chat_id}
+    elif announce:
+        j["delivery"] = {"mode": "announce", "channel": "last"}
+    else:
+        j["delivery"] = {"mode": "none"}
     if model:
         j["payload"]["model"] = model
     return j
@@ -491,6 +509,7 @@ jobs = [
         "Use TZ=" + tz + " for all date operations.\n\n"
         "Run the evening routine. Follow skills/evening-routine/SKILL.md step by step.\n\n"
         "Exit silently with NO_REPLY.",
+        session_target="current",
     ),
 ]
 
