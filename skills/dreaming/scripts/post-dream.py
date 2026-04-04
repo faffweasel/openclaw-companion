@@ -29,18 +29,9 @@ SKILL_NAME = os.path.basename(SKILL_DIR)
 WORKSPACE = os.path.dirname(os.path.dirname(SKILL_DIR))
 
 # Load .env
-ENV_FILE = os.path.join(WORKSPACE, ".env")
-if os.path.isfile(ENV_FILE):
-    with open(ENV_FILE, encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            key, _, value = line.partition("=")
-            key = key.strip()
-            value = value.strip().strip('"').strip("'")
-            if key and key not in os.environ:
-                os.environ[key] = value
+sys.path.insert(0, os.path.join(WORKSPACE, "lib"))
+from env import load_env
+load_env(WORKSPACE)
 
 DATA_DIR = os.environ.get("DATA_DIR", os.path.join(WORKSPACE, "skills-data"))
 SKILLS_DIR = os.environ.get("SKILLS_DIR", os.path.join(WORKSPACE, "skills"))
@@ -49,7 +40,7 @@ SKILL_DATA = os.path.join(DATA_DIR, SKILL_NAME)
 CONFIG_FILE = os.path.join(SKILL_DATA, "dream-config.json")
 PRECONSCIOUS_ADD = os.path.join(SKILLS_DIR, "preconscious", "scripts", "add.py")
 
-USER_AGENT = "Mozilla/5.0 (openclaw-companion dreaming)"
+USER_AGENT = "openclaw-companion/1.0 dreaming"
 
 DEFAULT_REFLECTION_SYSTEM = (
     'Read the following dream text. Respond with ONLY a JSON object, no markdown, no preamble: '

@@ -135,8 +135,9 @@ def vector_search(
         print(f"Query embedding failed: {e}", file=sys.stderr)
         return []
 
-    # Load all embeddings and compute similarity
-    # For <5000 chunks this is fast (milliseconds in Python)
+    # Load all embeddings and compute similarity in Python.
+    # For <5000 chunks this is fast (milliseconds). If this becomes a
+    # bottleneck, consider sqlite-vss for approximate nearest-neighbor search.
     rows = db.execute(
         """
         SELECT e.chunk_id, c.source_file, c.start_line, c.end_line,
@@ -145,6 +146,13 @@ def vector_search(
         JOIN chunks c ON c.chunk_id = e.chunk_id
         """
     ).fetchall()
+
+    if len(rows) > 5000:
+        print(
+            f"Warning: {len(rows)} embeddings loaded into memory for brute-force search. "
+            "Consider sqlite-vss for faster approximate search.",
+            file=sys.stderr,
+        )
 
     scored = []
     for row in rows:

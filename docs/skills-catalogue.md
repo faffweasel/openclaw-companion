@@ -63,6 +63,17 @@ Security-first behavioral guidelines. Loaded every session via `always: true`. G
 
 No scripts — this is a pure SKILL.md that constrains agent behaviour. Classifies external actions into "ask first" vs "do freely". Prevents credential leakage (API keys live in `OpenClaw's environment configuration`, never workspace files). Adds a red-flag checklist for prompt injection via tool outputs.
 
+### energy-state
+
+Engagement level (0-100) that decays with inactivity and recharges through conversation. Shapes tone and initiative without being announced. Always installed; `energy-state.json` lives at the workspace root.
+
+| | |
+|---|---|
+| **Trigger** | Morning routine (decay), evening routine (recharge), session start (read) |
+| **Cron** | None — called by morning/evening routines |
+| **Scripts** | `decay.py`, `recharge.py`, `read.py` |
+| **Dependencies** | python3 |
+
 ---
 
 ## Companion Skills

@@ -1,3 +1,8 @@
+# openclaw-companion .gitignore
+# The repo IS the workspace. This file defines the split:
+#   Git-tracked:  skills/, templates/, docs/, lib/, setup.sh, README.md
+#   Gitignored:   everything generated, accumulated, or user-specific
+
 # Instance data — never committed to the framework repo
 memory/*
 !memory/.gitkeep

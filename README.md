@@ -126,7 +126,7 @@ memory/
 ├── state-of-me/           # Weekly reflections
 └── .learnings/            # Corrections and failures
 
-MEMORY.md                  # Lean index — under 50 lines (auto-loaded every turn)
+MEMORY.md                  # Lean index — under 50 lines (loaded at DM session start)
 ```
 
 ### 4. Skill Layer (modular, opt-in)
@@ -154,6 +154,7 @@ Skills are modular capabilities. Core skills are always installed; companion ski
 | **carry-over-queue** | "Tell the user this tomorrow" buffer. Items 3+ days old auto-promote to urgent. |
 | **morning-routine** | Daily startup: process carry-overs, decay preconscious and energy, check learnings and reflections, read dreams, send greeting influenced by mood and energy state. |
 | **evening-routine** | Daily wrap-up: summarize conversations, capture structured mood and energy, update entities, scan for preferences and learnings. |
+| **energy-state** | Engagement level (0-100) that decays with inactivity and recharges through conversation. Shapes tone and initiative. |
 | **zero-trust** | Security-first behavioral guidelines. Always loaded. Governs credentials, installations, external actions. |
 
 ### Companion Skills
@@ -345,7 +346,7 @@ See [docs/known-failure-modes.md](docs/known-failure-modes.md) for the full list
 
 | Component | Status |
 |---|---|
-| Core skills (5) | ✅ Built and tested |
+| Core skills (6) | ✅ Built and tested |
 | Companion skills (17) | ✅ Built |
 | Setup wizard | ✅ Written |
 | Templates | ✅ Written |

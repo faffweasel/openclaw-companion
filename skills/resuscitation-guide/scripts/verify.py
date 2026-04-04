@@ -9,18 +9,11 @@ from pathlib import Path
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SKILL_DIR = os.path.dirname(SCRIPT_DIR)
 WORKSPACE = os.path.dirname(os.path.dirname(SKILL_DIR))
-ENV_FILE = os.path.join(WORKSPACE, ".env")
 
 # Source .env
-if os.path.isfile(ENV_FILE):
-    with open(ENV_FILE) as f:
-        for line in f:
-            line = line.strip()
-            if line and not line.startswith("#") and "=" in line:
-                key, _, val = line.partition("=")
-                val = val.strip('"').strip("'")
-                if key.strip() not in os.environ:
-                    os.environ[key.strip()] = val
+sys.path.insert(0, os.path.join(WORKSPACE, "lib"))
+from env import load_env
+load_env(WORKSPACE)
 
 TZ = os.environ.get("TZ", "UTC")
 DATA_DIR = os.environ.get("DATA_DIR", os.path.join(WORKSPACE, "skills-data"))
@@ -125,7 +118,7 @@ print()
 
 # --- Skills ---
 print("Skills:")
-core_skills = ["preconscious", "carry-over-queue", "morning-routine", "evening-routine", "zero-trust"]
+core_skills = ["preconscious", "carry-over-queue", "morning-routine", "evening-routine", "energy-state", "zero-trust"]
 companion_skills = [
     "preference-accumulation", "continuity-check", "question-user",
     "self-analysis", "model-personality-test", "weekly-state-of-me",

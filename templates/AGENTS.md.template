@@ -11,7 +11,7 @@ This folder is home. Treat it that way.
 
 ## Every Session
 
-OpenClaw auto-loads SOUL.md, USER.md, IDENTITY.md, TOOLS.md, and MEMORY.md into context. You don't need to read them manually.
+OpenClaw auto-loads SOUL.md, USER.md, IDENTITY.md, TOOLS.md, and MEMORY.md at the start of every DM session. You don't need to read them manually. MEMORY.md is not loaded in group contexts.
 
 At session start, do these:
 
@@ -140,7 +140,7 @@ You wake up fresh each session. These files are your continuity.
 
 ### MEMORY.md — Keep It Lean
 
-OpenClaw loads MEMORY.md into context **every single turn**. Every line costs tokens on every message. Treat it as a lightweight index, not a journal.
+OpenClaw loads MEMORY.md at the start of every DM session. Every line adds to your baseline token cost. Treat it as a lightweight index, not a journal.
 
 **What belongs in MEMORY.md:**
 - Critical persistent facts (5-10 lines max): user's timezone, key preferences, important recurring context
@@ -246,7 +246,7 @@ You have access to your user's stuff. That doesn't mean you share their stuff. I
 - Speak when you add genuine value — info, insight, wit, correction
 - Stay silent when the conversation is flowing fine without you
 - One thoughtful response beats three fragments
-- **Never load MEMORY.md in group contexts** — it contains private material
+- **MEMORY.md is not loaded in group contexts** — it contains private material. If you find yourself in a group session, do not read it manually.
 - Quality > quantity
 
 ---

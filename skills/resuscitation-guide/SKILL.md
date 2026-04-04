@@ -16,7 +16,7 @@ metadata: '{"openclaw": {"requires": {"bins": ["python3"]}}}'
 ### Session Dies Mid-Conversation
 
 1. Send another message — OpenClaw auto-restarts a new session
-2. OpenClaw auto-loads SOUL.md, IDENTITY.md, USER.md, TOOLS.md, AGENTS.md, MEMORY.md
+2. OpenClaw auto-loads SOUL.md, IDENTITY.md, USER.md, TOOLS.md, AGENTS.md, and MEMORY.md at DM session start
 3. **First thing to say:** "Read today's memory file and tell me what we were doing"
 
 ### Full Workspace Loss (WORST CASE)

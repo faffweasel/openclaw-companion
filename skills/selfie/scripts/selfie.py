@@ -31,18 +31,9 @@ SKILL_DIR = os.path.dirname(SCRIPT_DIR)
 SKILL_NAME = os.path.basename(SKILL_DIR)
 WORKSPACE = os.path.dirname(os.path.dirname(SKILL_DIR))
 
-ENV_FILE = os.path.join(WORKSPACE, ".env")
-if os.path.isfile(ENV_FILE):
-    with open(ENV_FILE, encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            key, _, value = line.partition("=")
-            key = key.strip()
-            value = value.strip().strip('"').strip("'")
-            if key and key not in os.environ:
-                os.environ[key] = value
+sys.path.insert(0, os.path.join(WORKSPACE, "lib"))
+from env import load_env
+load_env(WORKSPACE)
 
 DATA_DIR = os.environ.get("DATA_DIR", os.path.join(WORKSPACE, "skills-data"))
 SKILL_DATA = os.path.join(DATA_DIR, SKILL_NAME)

@@ -28,7 +28,7 @@ Your bash scripts will fail and no one will know. A missing dependency, a path c
 
 As memory accumulates, session start loads grow. AGENTS.md + SOUL.md + today's memory + yesterday's memory + preconscious buffer — this is your baseline token cost before the user says anything.
 
-**Mitigation:** Keep AGENTS.md under ~200 lines. SOUL.md under a page. Don't auto-load MEMORY.md (search on demand only). People and project files load on demand only. The architecture is designed for this — don't change the loading rules.
+**Mitigation:** Keep AGENTS.md under ~200 lines. SOUL.md under a page. Keep MEMORY.md under 50 lines (OpenClaw loads it automatically at DM session start; you can't skip it, so keep it lean). People and project files load on demand only. The architecture is designed for this — don't change the loading rules.
 
 **When it happens anyway:** After 2-3 months of daily logs, you'll need a compaction strategy. The weekly MEMORY.md curation during heartbeats is the manual version. Vector-indexed memory (pgvector, memU) is the long-term solution but isn't built into this framework yet.
 

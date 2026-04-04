@@ -14,7 +14,7 @@ SKILL_DIR = os.path.dirname(SCRIPT_DIR)
 SKILL_NAME = os.path.basename(SKILL_DIR)
 WORKSPACE = os.path.dirname(os.path.dirname(SKILL_DIR))
 
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+USER_AGENT = "openclaw-companion/1.0"
 API_BASE = "https://api.venice.ai/api/v1"
 
 

@@ -70,14 +70,14 @@ memory/
 ├── blog-proposals/         # Proposed blog topics
 └── .learnings/             # Corrections and failures
 
-MEMORY.md                   # Lean index — under 50 lines (auto-loaded every turn)
+MEMORY.md                   # Lean index — under 50 lines (loaded at DM session start)
 energy-state.json           # Energy/engagement level (read at session start)
 location.json               # Current + home location for location-aware skills
 ```
 
-**Loading rules:** OpenClaw auto-loads MEMORY.md, SOUL.md, USER.md, IDENTITY.md, and TOOLS.md every turn. Daily memory and preconscious load at session start via AGENTS.md instructions. Everything else loads on demand — when a person is mentioned, a project referenced, or older context needed.
+**Loading rules:** OpenClaw auto-loads SOUL.md, USER.md, IDENTITY.md, TOOLS.md, and MEMORY.md at the start of every DM session. Daily memory and preconscious load at session start via AGENTS.md instructions. Everything else loads on demand — when a person is mentioned, a project referenced, or older context needed. MEMORY.md is not loaded in group contexts.
 
-**MEMORY.md** is a lightweight index: critical facts, pointers to people/project files, and a handful of lessons. Target under 50 lines. Rich context lives in `key-memories.md`, searched via grep when needed. This keeps the per-turn auto-load cost predictable.
+**MEMORY.md** is a lightweight index: critical facts, pointers to people/project files, and a handful of lessons. Target under 50 lines. Rich context lives in `key-memories.md`, searched via grep when needed. This keeps the session-start cost predictable.
 
 ## Skill Layer
 

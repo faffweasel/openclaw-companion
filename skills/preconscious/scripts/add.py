@@ -4,7 +4,7 @@ Usage: add.py "description" [C] [I]
 C defaults to 5, I defaults to 3.
 """
 import json, os, sys
-from datetime import datetime
+from datetime import datetime, timezone
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SKILL_DIR = os.path.dirname(SCRIPT_DIR)
@@ -39,7 +39,11 @@ if len(data["items"]) >= max_items:
     dropped = data["items"].pop(0)
     print(f"Dropped: {dropped['description']}")
 
-today = datetime.now().strftime("%Y-%m-%d")
+try:
+    from zoneinfo import ZoneInfo
+    today = datetime.now(ZoneInfo(TZ)).strftime("%Y-%m-%d")
+except Exception:
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 data["items"].append({"description": description, "c": c, "i": importance, "added": today})
 
 with open(BUFFER_FILE, "w") as f:

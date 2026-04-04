@@ -34,6 +34,14 @@ echo ""
 echo -e "Workspace: ${BOLD}${WORKSPACE}${NC}"
 echo ""
 
+# Python version check — zoneinfo requires 3.9+, we require 3.10+
+if ! python3 -c "import sys; assert sys.version_info >= (3, 10)" 2>/dev/null; then
+  echo -e "${RED}Error: Python 3.10+ is required.${NC}"
+  python3 --version 2>/dev/null || echo "python3 not found in PATH."
+  echo "Scripts use zoneinfo (3.9+) and silently fall back to UTC on older versions."
+  exit 1
+fi
+
 # Sanity check
 if [ ! -d "${SKILLS_SRC}" ] || [ ! -d "${TEMPLATES}" ]; then
   echo -e "${RED}Error: skills/ or templates/ not found.${NC}"
@@ -127,7 +135,7 @@ fi
 # --- Skills ---
 echo ""
 echo -e "${BOLD}4. Companion Skills${NC}"
-echo -e "${DIM}Core skills (preconscious, carry-over, morning/evening routines, zero-trust) are always active.${NC}"
+echo -e "${DIM}Core skills (preconscious, carry-over, morning/evening routines, energy-state, zero-trust) are always active.${NC}"
 echo ""
 
 SKILLS_SELECTED=""
@@ -314,7 +322,7 @@ fi
 
 # --- Memory directory ---
 mkdir -p "${WORKSPACE}/memory"
-# MEMORY.md lives at workspace root (auto-loaded every turn)
+# MEMORY.md lives at workspace root (loaded at DM session start)
 if [ -f "${TEMPLATES}/MEMORY.md.template" ] && [ ! -f "${WORKSPACE}/MEMORY.md" ]; then
   # Migrate from old location if present
   if [ -f "${WORKSPACE}/memory/MEMORY.md" ]; then
@@ -406,7 +414,7 @@ print(m.get('seed_target', ''))" 2>/dev/null || true)
 }
 
 # Core skills
-for skill in preconscious carry-over-queue morning-routine evening-routine zero-trust; do
+for skill in preconscious carry-over-queue morning-routine evening-routine energy-state zero-trust; do
   seed_skill "$skill"
 done
 
